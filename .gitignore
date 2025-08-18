@@ -3,4 +3,4 @@
 
 ### Depost teml files ###
 /devops/configs/grafana/
-/devops/configs/victoria-metrics/data
+/devops/configs/victoria-metrics/data/
