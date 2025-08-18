@@ -1,0 +1,13 @@
+scrape_configs:
+  - job_name: user-service
+    static_configs:
+      - targets: ["172.17.0.1:9090"]
+    metrics_path: /actuator/prometheus
+    oauth2:
+      client_id: victoria-metrics
+      client_secret: eShk57vALSZOAXPVZnYEKo4o9270Y6Du
+      token_url: http://keycloak:8080/realms/shop/protocol/openid-connect/token
+      scopes:
+        - metrics
+      endpoint_params:
+        grant_type: client_credentials

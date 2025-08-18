@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1755422879178-1
+      author: another
+      objectQuotingStrategy: QUOTE_ONLY_RESERVED_WORDS
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_users
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_uuid
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: first_name
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: last_name
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: patronymic
+                  type: VARCHAR(50)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: prone_number
+                  type: VARCHAR(20)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: email
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: create_at
+                  type: timestamp
+            tableName: users
+

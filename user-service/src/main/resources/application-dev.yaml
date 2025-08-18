@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: user-service
+  datasource:
+    url: jdbc:postgresql://localhost:15432/user_service
+    username: user
+    password: user
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/db.changelog-master.yaml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/shop
+keycloak:
+  server-url: http://localhost:8080
+  realms:
+    service-realms:
+      realm: shop
+    admin-realms:
+      realm: master
+      username: admin
+      password: admin
+      client:
+        client-id: admin-cli
+server:
+  port: 9090
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+#      Какое кол-во трайсов собирать в процентах
+      probability: 0.6
+logging:
+  file:
+    name: /home/another/Project/developering/shop-service/devops/logs/user-service/user-service.log

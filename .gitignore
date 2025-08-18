@@ -1,0 +1,6 @@
+### Service logs ###
+/devops/logs/
+
+### Depost teml files ###
+/devops/configs/grafana/
+/devops/configs/victoria-metrics/data/
