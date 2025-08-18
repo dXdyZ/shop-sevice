@@ -5,6 +5,16 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/httpRequests" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/grafana" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/metricID_metricName" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/metricID_tsid" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/metricName_tsid" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/rollupResult" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/data/big" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/data/small/snapshots" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/indexdb/snapshots" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/snapshots" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/devops/logs" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
