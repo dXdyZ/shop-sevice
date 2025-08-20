@@ -39,13 +39,13 @@ services:
       - db-keycloak
     command: [ "start-dev" ]
 
-  nginx:
-    image: nginx:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./logs/nginx:/var/log/nginx
+#  nginx:
+#    image: nginx:latest
+#    ports:
+#      - "8080:80"
+#    volumes:
+#      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+#      - ./logs/nginx:/var/log/nginx
 
   victoria-metrics:
     image: victoriametrics/victoria-metrics:v1.93.12

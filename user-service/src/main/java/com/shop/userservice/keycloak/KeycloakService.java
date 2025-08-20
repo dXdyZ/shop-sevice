@@ -1,35 +1,55 @@
 package com.shop.userservice.keycloak;
 
+import com.shop.userservice.exception.KeycloakUserCreationException;
 import com.shop.userservice.exception.UserDuplicateException;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.Observation;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.resource.RolesResource;
-import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.ErrorRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
 public class KeycloakService {
-    private final Keycloak keycloak;
+    private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
+    private static final Marker NOTIFY = MarkerFactory.getMarker("NOTIFY");
+    private static final Marker APP_CALL = MarkerFactory.getMarker("APP_CALL");
+    private static final Marker ERROR = MarkerFactory.getMarker("ERROR");
 
+    private static final long SLOW_THRESHOLD_MS = 500;
+
+    private final Keycloak keycloak;
     private final String realm;
 
-    public KeycloakService(Keycloak keycloak,
+    public KeycloakService(Keycloak keycloak, MeterRegistry materRegistry,
                            @Value("${keycloak.realms.service-realms.realm}") String realm) {
         this.keycloak = keycloak;
         this.realm = realm;
     }
 
+    /**
+     * @param username - Login для авторизации
+     * @param firstName - Имя пользователя
+     * @param lastName - Фамилия пользователя
+     * @param email - Электронная почта пользователя
+     * @param password - Пароль пользователя
+     * @return UUID пользователя в keycloak
+     * @throws UserDuplicateException - Выбрасывается если username/email заняты
+     */
     public String createUser(String username, String firstName,
                              String lastName, String email, String password) throws UserDuplicateException{
-        isUsernameAndEmailTaken(username, email);
+
+        long start = System.currentTimeMillis();
 
         CredentialRepresentation credential = new CredentialRepresentation();
         credential.setType(CredentialRepresentation.PASSWORD);
@@ -44,63 +64,71 @@ public class KeycloakService {
         user.setEnabled(true);
         user.setRequiredActions(List.of("VERIFY_EMAIL"));
         user.setCredentials(List.of(credential));
+        user.setRealmRoles(List.of("app-user"));
+
 
 
         try (Response response = keycloak.realm(realm).users().create(user)) {
+            int status = response.getStatus();
+
+            long elapsed = System.currentTimeMillis() - start;
+
             if (response.getStatus() == 201) {
                 String userId = extractUserId(response);
 
-                assignRolesToUser(userId);
+                if (elapsed > SLOW_THRESHOLD_MS) {
+                    log.warn(APP_CALL, "KEYCLOAK | action=createUser | SLOW | ms={} | username={} | email={} | userUUID={}",
+                            elapsed, username, email, userId);
+                } else {
+                    log.debug(APP_CALL, "KEYCLOAK | action=createUser | ms={} | username={} | email={} | userUUID={}",
+                            elapsed, username, email, userId);
+                }
 
-                keycloak.realm(realm)
-                        .users()
-                        .get(userId)
-                        .sendVerifyEmail();
+                CompletableFuture.runAsync(() -> sendVerifyEmail(userId, username, email));
 
                 return userId;
-            } else {
-                log.error("Error creating user in the keycloak");
+            } else if (status == 409){
+                ErrorRepresentation errorRepresentation = null;
+                try {
+                    errorRepresentation = response.readEntity(ErrorRepresentation.class);
+                } catch (Exception e) {
+
+                }
+                if (errorRepresentation != null && errorRepresentation.getErrorMessage() != null) {
+                    throw new UserDuplicateException(errorRepresentation.getErrorMessage());
+                }
             }
+        } catch (RuntimeException exception) {
+
         }
         return null;
+    }
+
+    private void sendVerifyEmail(String userId, String username, String email) {
+        try {
+            long start = System.currentTimeMillis();
+
+            keycloak.realm(realm)
+                    .users()
+                    .get(userId)
+                    .sendVerifyEmail();
+            long elapsed = System.currentTimeMillis() - start;
+
+            if (elapsed > SLOW_THRESHOLD_MS) {
+                log.warn(NOTIFY, "KEYCLOAK | action=verifyEmail | SLOW | ms={} | username={} | email={} | userUUID={}",
+                        elapsed, username, email, userId);
+            } else {
+                log.debug(NOTIFY, "KEYCLOAK | action=verifyEmail | ms={} | username={} | email={} | userUUID={}",
+                        elapsed, username, email, userId);
+            }
+
+        } catch (RuntimeException exception) {
+
+        }
     }
 
     private String extractUserId(Response response) {
         String location = response.getLocation().getPath();
         return location.substring(location.lastIndexOf('/') + 1);
-    }
-
-    private void assignRolesToUser(String userId) {
-        UserResource userResource = keycloak.realm(realm).users().get(userId);
-
-        RolesResource realmRoles = keycloak.realm(realm).roles();
-
-        List<RoleRepresentation> rolesToAdd = realmRoles.list().stream()
-                .filter(role -> role.getName().equals("app-user"))
-                .toList();
-
-        if (!rolesToAdd.isEmpty()) {
-            userResource.roles().realmLevel().add(rolesToAdd);
-        } else {
-            log.error("Role user not found in realm roles");
-        }
-    }
-
-    private void isUsernameAndEmailTaken(String username, String email) {
-        try {
-            List<UserRepresentation> usernameRep = keycloak.realm(realm).users()
-                    .searchByUsername(username, true);
-            List<UserRepresentation> emailRep = keycloak.realm(realm).users()
-                    .searchByEmail(email, true);
-
-            if (!emailRep.isEmpty()) {
-                throw new UserDuplicateException("The user with this email already exists");
-            }
-            if (!usernameRep.isEmpty()) {
-                throw new UserDuplicateException("The user with this username already exists");
-            }
-        } catch (Exception e) {
-            log.error("Duplicate check filed", e);
-        }
     }
 }

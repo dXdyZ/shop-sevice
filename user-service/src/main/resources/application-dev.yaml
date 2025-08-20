@@ -41,6 +41,3 @@ management:
     sampling:
 #      Какое кол-во трайсов собирать в процентах
       probability: 0.6
-logging:
-  file:
-    name: /home/another/Project/developering/shop-service/devops/logs/user-service/user-service.log

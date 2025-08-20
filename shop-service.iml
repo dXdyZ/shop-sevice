@@ -6,6 +6,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/httpRequests" />
       <excludeFolder url="file://$MODULE_DIR$/devops/configs/grafana" />
+      <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data" />
       <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/metricID_metricName" />
       <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/metricID_tsid" />
       <excludeFolder url="file://$MODULE_DIR$/devops/configs/victoria-metrics/data/cache/metricName_tsid" />

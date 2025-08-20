@@ -8,12 +8,10 @@ import com.shop.userservice.keycloak.KeycloakService;
 import com.shop.userservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -38,39 +36,29 @@ public class UserService {
     }
 
     public User getUserByUUID(UUID uuid) {
-        return userRepository.findByUserUUID(uuid).orElseThrow(() -> {
-            log.warn("User not found by uuid={}", uuid);
-            return new UserNotFoundException("User by uuid: %s not found".formatted(uuid));
-        });
+        return userRepository.findByUserUUID(uuid).orElseThrow(
+                () -> new UserNotFoundException("User by uuid: %s not found".formatted(uuid)));
     }
 
     public User getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() -> {
-            log.warn("User not found by id={}", id);
-            return new UserNotFoundException("User by id: %s not found".formatted(id));
-        });
+        return userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User by id: %s not found".formatted(id)));
     }
 
     public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> {
-            log.warn("User not found by email={}", email);
-            return new UserNotFoundException("User by email: %s not found".formatted(email));
-        });
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new UserNotFoundException("User by email: %s not found".formatted(email)));
     }
 
     public User getUserByPhoneNumber(String phoneNumber) {
-        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(() -> {
-            log.warn("User not found by phoneNumber={}", phoneNumber);
-            return new UserNotFoundException("User by phone number: %s not found".formatted(phoneNumber));
-        });
+        return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(
+                () -> new UserNotFoundException("User by phone number: %s not found".formatted(phoneNumber)));
     }
 
     @Transactional
     public void deleteUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> {
-            log.warn("User not found by id={}", id);
-            return new UserNotFoundException("User by id: %s not found".formatted(id));
-        });
+        User user = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User by id: %s not found".formatted(id)));
         userRepository.delete(user);
     }
 }
