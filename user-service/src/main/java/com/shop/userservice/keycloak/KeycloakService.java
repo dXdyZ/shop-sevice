@@ -22,19 +22,21 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class KeycloakService {
     private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
-    private static final Marker NOTIFY = MarkerFactory.getMarker("NOTIFY");
     private static final Marker APP_CALL = MarkerFactory.getMarker("APP_CALL");
     private static final Marker ERROR = MarkerFactory.getMarker("ERROR");
 
-    private static final long SLOW_THRESHOLD_MS = 500;
+    private static final long SLOW_THRESHOLD_MS = 500L;
 
     private final Keycloak keycloak;
     private final String realm;
+    private final KeycloakEmailService keycloakEmailService;
 
     public KeycloakService(Keycloak keycloak, MeterRegistry materRegistry,
-                           @Value("${keycloak.realms.service-realms.realm}") String realm) {
+                           @Value("${keycloak.realms.service-realms.realm}") String realm,
+                           KeycloakEmailService keycloakEmailService) {
         this.keycloak = keycloak;
         this.realm = realm;
+        this.keycloakEmailService = keycloakEmailService;
     }
 
     /**
@@ -77,14 +79,16 @@ public class KeycloakService {
                 String userId = extractUserId(response);
 
                 if (elapsed > SLOW_THRESHOLD_MS) {
-                    log.warn(APP_CALL, "KEYCLOAK | action=createUser | SLOW | ms={} | username={} | email={} | userUUID={}",
+                    log.warn(APP_CALL, "service=Keycloak | action=createUser | SLOW | ms={} | username={} | email={} | userUUID={}",
                             elapsed, username, email, userId);
                 } else {
-                    log.debug(APP_CALL, "KEYCLOAK | action=createUser | ms={} | username={} | email={} | userUUID={}",
+                    log.debug(APP_CALL, "service=Keycloak | action=createUser | ms={} | username={} | email={} | userUUID={}",
                             elapsed, username, email, userId);
                 }
 
-                CompletableFuture.runAsync(() -> sendVerifyEmail(userId, username, email));
+                keycloakEmailService.sendVerifyEmail(userId, username, email);
+
+                log.info(AUDIT, "action=createUser | userId={} | username={} | status=SUCCESS", userId, username);
 
                 return userId;
             } else if (status == 409){
@@ -102,29 +106,6 @@ public class KeycloakService {
 
         }
         return null;
-    }
-
-    private void sendVerifyEmail(String userId, String username, String email) {
-        try {
-            long start = System.currentTimeMillis();
-
-            keycloak.realm(realm)
-                    .users()
-                    .get(userId)
-                    .sendVerifyEmail();
-            long elapsed = System.currentTimeMillis() - start;
-
-            if (elapsed > SLOW_THRESHOLD_MS) {
-                log.warn(NOTIFY, "KEYCLOAK | action=verifyEmail | SLOW | ms={} | username={} | email={} | userUUID={}",
-                        elapsed, username, email, userId);
-            } else {
-                log.debug(NOTIFY, "KEYCLOAK | action=verifyEmail | ms={} | username={} | email={} | userUUID={}",
-                        elapsed, username, email, userId);
-            }
-
-        } catch (RuntimeException exception) {
-
-        }
     }
 
     private String extractUserId(Response response) {

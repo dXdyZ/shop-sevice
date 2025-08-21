@@ -41,3 +41,17 @@ management:
     sampling:
 #      Какое кол-во трайсов собирать в процентах
       probability: 0.6
+  metrics:
+    tags:
+      application: user-service
+
+resilience4j:
+  retry:
+    instances:
+      keycloakVerifyEmail:
+        max-attempts: 5
+        wait-duration: 500ms
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        enable-randomized-wait: true
+        randomized-wait-factor: 0.5
