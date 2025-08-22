@@ -1,4 +1,4 @@
-package com.shop.userservice.controller.filters;
+package com.shop.userservice.util.filters;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

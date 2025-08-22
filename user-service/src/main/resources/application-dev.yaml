@@ -49,9 +49,25 @@ resilience4j:
   retry:
     instances:
       keycloakVerifyEmail:
+        max-attempts: 5                # Общее количество попыток (1 оригинальный вызов + 4 ретрая = 5)
+        wait-duration: 500ms           # Базовая задержка перед повтором (для 1-й повторной попытки)
+        enable-exponential-backoff: true   # Включает экспоненциальное увеличение задержки
+        exponential-backoff-multiplier: 2  # Множитель для роста задержки (500ms → 1s → 2s → 4s)
+        enable-randomized-wait: true       # Добавляет случайность (джиттер), чтобы снизить нагрузку при одновременных ретраях
+        randomized-wait-factor: 0.5        # Задаёт диапазон рандомизации ±50% (например, при 2s пауза будет 1s–3s)
+        retry-exceptions:
+          - jakarta.ws.rs.ProcessingException
+
+        # ignore-exceptions:               # Исключения, которые не нужно ретраить (например, бизнес-ошибки)
+        #   - com.example.UserDuplicateException
+        # fail-after-max-attempts: true    # После исчерпания попыток выбросить исключение (иначе пойдет в fallbackMethod)
+        # event-consumer-buffer-size: 100  # Размер буфера событий для метрик (если используешь Micrometer/Prometheus)
+      keycloakCreateUser:
         max-attempts: 5
         wait-duration: 500ms
         enable-exponential-backoff: true
         exponential-backoff-multiplier: 2
         enable-randomized-wait: true
         randomized-wait-factor: 0.5
+        retry-exceptions:
+          - jakarta.ws.rs.ProcessingException

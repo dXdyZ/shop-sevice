@@ -34,14 +34,19 @@
             <encoder>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
             </encoder>
+            <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+                <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                    <marker>APP_CALL</marker>
+                    <marker>AUDIT</marker>
+                    <marker>ERROR</marker>
+                    <marker>NOTIFY</marker>
+                    <marker>INFRA_ERROR</marker>
+                </evaluator>
+            </filter>
         </appender>
 
-        <appender name="APP_CALL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <appender name="APP_CALL" class="ch.qos.logback.core.FileAppender">
             <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-app-call.log</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-app-call-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>7</maxHistory>
-            </rollingPolicy>
 
             <encoder>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern>
@@ -56,12 +61,8 @@
             </filter>
         </appender>
 
-        <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <appender name="ERROR" class="ch.qos.logback.core.FileAppender">
             <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-error.log</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-error-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>7</maxHistory>
-            </rollingPolicy>
 
             <encoder>
                 <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern>
@@ -76,12 +77,8 @@
             </filter>
         </appender>
 
-        <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <appender name="AUDIT" class="ch.qos.logback.core.FileAppender">
             <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-audit.log</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-audit-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>7</maxHistory>
-            </rollingPolicy>
 
             <encoder>
                 <pattern><pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern></pattern>
@@ -96,12 +93,8 @@
             </filter>
         </appender>
 
-        <appender name="NOTIFY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <appender name="NOTIFY" class="ch.qos.logback.core.FileAppender">
             <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-notify.log</file>
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-notify-%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>7</maxHistory>
-            </rollingPolicy>
 
             <encoder>
                 <pattern><pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern></pattern>
@@ -116,13 +109,30 @@
             </filter>
         </appender>
 
-        <root level="DEBUG">
+        <appender name="INFRA_ERROR" class="ch.qos.logback.core.FileAppender">
+            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-infra-error.log</file>
+
+            <encoder>
+                <pattern><pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern></pattern>
+            </encoder>
+
+            <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+                <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                    <marker>INFRA_ERROR</marker>
+                </evaluator>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+
+        <root level="INFO">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="APP_CALL"/>
             <appender-ref ref="AUDIT"/>
             <appender-ref ref="ERROR"/>
             <appender-ref ref="NOTIFY"/>
+            <appender-ref ref="INFRA_ERROR"/>
         </root>
     </springProfile>
 </configuration>
