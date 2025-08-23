@@ -4,8 +4,8 @@ set -euo pipefail
 KC_URL=${KC_URL:-http://localhost:8080}
 REALM=${REALM:-shop}
 CLIENT_ID=${CLIENT_ID:-dev-cli}
-USERNAME=${USERNAME:-tokenuser}
-PASSWORD=${PASSWORD:-tokenToken}
+USERNAME=${USERNAME:-another}
+PASSWORD=${PASSWORD:-password}
 SCOPE=${SCOPE:-openid}
 
 RESP=$(curl -s -H "Content-Type: application/x-www-form-urlencoded" \

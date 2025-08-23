@@ -6,12 +6,15 @@ import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.exception.UserNotFoundException;
 import com.shop.userservice.keycloak.KeycloakService;
 import com.shop.userservice.repository.UserRepository;
+import com.shop.userservice.util.LogMarker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -56,9 +59,13 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserById(Long id) {
+    public void deleteUserById(Long id, String username) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("User by id: %s not found".formatted(id)));
+
         userRepository.delete(user);
+
+        log.info(LogMarker.AUDIT.getMarker(), "action=deleteUser | deletedUserId={} | deletedUsername={} | performedBy={}",
+                user.getId(), user.getEmail(), username);
     }
 }

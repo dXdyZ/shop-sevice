@@ -43,7 +43,7 @@
                     <marker>INFRA_ERROR</marker>
                 </evaluator>
             </filter>
-        </appender>
+        </appender>ResponseStatus
 
         <appender name="APP_CALL" class="ch.qos.logback.core.FileAppender">
             <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-app-call.log</file>
@@ -125,7 +125,7 @@
             </filter>
         </appender>
 
-        <root level="INFO">
+        <root level="DEBUG">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="APP_CALL"/>

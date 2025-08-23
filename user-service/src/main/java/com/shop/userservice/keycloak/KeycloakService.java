@@ -40,7 +40,7 @@ public class KeycloakService {
      * @param lastName - Фамилия пользователя
      * @param email - Электронная почта пользователя
      * @param password - Пароль пользователя
-     * @return UUID пользователя в keycloak
+     * @return UUID пользователя в keycloak будет использоваться для идентификации в других сервисах
      * @throws UserDuplicateException - Выбрасывается если username/email заняты
      */
     @Retry(name = "keycloakCreateUser", fallbackMethod = "createUserFallback")
@@ -115,6 +115,7 @@ public class KeycloakService {
         String location = response.getLocation().getPath();
         return location.substring(location.lastIndexOf('/') + 1);
     }
+
 
     public String createUserFallback(String username, String firstName,
                                    String lastName, String email, String password, Throwable throwable) {

@@ -17,7 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final UserJwtConverter userJwtConverter;
+
 
     @Bean
     @Order(1)
@@ -28,10 +29,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(httpPath -> httpPath
                         .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/v1/registration").permitAll())
+                        .requestMatchers("/api/v1/registration").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("USER"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter)))
+                                .jwtAuthenticationConverter(userJwtConverter)))
             .build();
     }
 
