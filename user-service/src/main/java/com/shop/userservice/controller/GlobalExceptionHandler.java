@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest()
                 .body(ErrorResponse.builder()
                         .messageCode("DUPLICATE_USER")
-                        .httpCode(HttpStatus.BAD_REQUEST.value())
+                        .httpCode(HttpStatus.CONFLICT.value())
                         .message(exception.getMessage())
                         .timestamp(Instant.now())
                         .build());

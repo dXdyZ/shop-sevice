@@ -59,13 +59,13 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUserById(Long id, String username) {
+    public void deleteUserById(Long id, String adminName) {
         User user = userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("User by id: %s not found".formatted(id)));
 
         userRepository.delete(user);
 
         log.info(LogMarker.AUDIT.getMarker(), "action=deleteUser | deletedUserId={} | deletedUsername={} | performedBy={}",
-                user.getId(), user.getEmail(), username);
+                user.getId(), user.getEmail(), adminName);
     }
 }

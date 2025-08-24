@@ -6,9 +6,6 @@ import com.shop.userservice.security.UserPrincipal;
 import com.shop.userservice.service.UserService;
 import com.shop.userservice.util.factory.UserDtoFactory;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/")
-public class UserController implements UserControllerDocs{
+public class UserController implements UserControllerDocs {
     private final UserService userService;
 
     @PostMapping("/registration")
@@ -34,25 +31,22 @@ public class UserController implements UserControllerDocs{
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 0, message = "The user ID must be greater than zero") Long id) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserById(id)));
     }
 
-    @GetMapping("/{uuid}")
+    @GetMapping("/by-uuid/{uuid}")
     public ResponseEntity<UserDto> getUserByUUID(@PathVariable UUID uuid) {
         return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByUUID(uuid)));
     }
 
     @GetMapping("/by-email/{email}")
-    public ResponseEntity<UserDto> getUserByEmail(@PathVariable
-                                                  @NotBlank(message = "The user's email must be specified")
-                                                  @Email(message = "The email must comply with the standards") String email) {
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
         return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByEmail(email)));
     }
 
     @GetMapping("/by-phone/{phone}")
-    public ResponseEntity<UserDto> getUserProneNumber(@PathVariable
-                                                      @NotBlank(message = "The user's phone number must be specified") String phone) {
+    public ResponseEntity<UserDto> getUserProneNumber(@PathVariable String phone) {
         return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByPhoneNumber(phone)));
     }
 

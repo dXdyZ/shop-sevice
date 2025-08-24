@@ -3,6 +3,7 @@ package com.shop.userservice.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,8 +38,8 @@ public class UserRegistrationDto {
     private String patronymic;
 
     @NotBlank(message = "The phone number must be specified")
-    @Size(min = 1, max = 50, message = "The phone number must contain 11 characters")
-    @Schema(description = "The user's phone number", example = "88888888888")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "The phone number must comply with the standard")
+    @Schema(description = "The user's phone number", example = "+88888888888")
     private String phoneNumber;
 
     @Email(message = "The email must be in a standard format")

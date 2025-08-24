@@ -17,8 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserJwtConverter userJwtConverter;
 
+    private final UserJwtConverter userJwtConverter;
 
     @Bean
     @Order(1)
@@ -29,7 +29,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(httpPath -> httpPath
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/auth/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-resources/**",
+                                "/webjars/**",
+                                "/error").permitAll()
                         .requestMatchers("/api/v1/registration").permitAll()
+                        .requestMatchers("/api/v1/by-phone/**", "/api/v1/by-uuid/**", "/api/v1/by-email/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("USER"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
