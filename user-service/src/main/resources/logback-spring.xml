@@ -125,7 +125,7 @@
             </filter>
         </appender>
 
-        <root level="DEBUG">
+        <root level="INFO">
             <appender-ref ref="FILE"/>
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="APP_CALL"/>

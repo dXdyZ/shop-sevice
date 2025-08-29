@@ -151,25 +151,10 @@ public interface UserControllerDocs {
                                                     "id": "The user's UUID must be specified",
                                                 }
                                             }
-                                            """))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input data",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "VALIDATION_FAILED",
-                                                "httpCode": 400,
-                                                "message": "Validation error",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                                "details": {
-                                                    "id": "The UUID must comply with the standards",
-                                                }
-                                            }
                                             """)))
             }
     )
-    ResponseEntity<UserDto> getUserByUUID(@org.hibernate.validator.constraints.UUID(message = "The UUID must comply with the standards")
-                                          @NotBlank(message = "The user's UUID must be specified") @PathVariable UUID uuid);
+    ResponseEntity<UserDto> getUserByUUID(@NotNull(message = "The user's UUID must be specified") @PathVariable UUID uuid);
 
 
     @Operation(summary = "Get user by email")

@@ -18,4 +18,15 @@ public class ErrorResponse {
     private Integer httpCode;
     private Map<String, String> details;
     private Instant timestamp;
+
+    public static ErrorResponse validationError(Map<String, String> errors) {
+        return ErrorResponse.builder()
+                .messageCode("VALIDATION_FAILED")
+                .message("Validation error")
+                .httpCode(400)
+                .details(errors)
+                .timestamp(Instant.now())
+                .build();
+    }
+
 }

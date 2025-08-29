@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -39,6 +41,8 @@ public class UserService {
     }
 
     public User getUserByUUID(UUID uuid) {
+
+        
         return userRepository.findByUserUUID(uuid).orElseThrow(
                 () -> new UserNotFoundException("User by uuid: %s not found".formatted(uuid)));
     }
