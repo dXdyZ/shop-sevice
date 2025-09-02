@@ -10,7 +10,8 @@ public enum LogMarker {
     AUDIT,
     APP_CALL,
     ERROR,
-    INFRA_ERROR;
+    INFRA_ERROR,
+    NOTIFY;
 
     private final Marker marker;
 

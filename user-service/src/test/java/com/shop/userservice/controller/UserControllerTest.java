@@ -2,6 +2,7 @@ package com.shop.userservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.userservice.dto.UserRegistrationDto;
+import com.shop.userservice.dto.UserSearchDto;
 import com.shop.userservice.entity.User;
 import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.exception.UserNotFoundException;
@@ -13,14 +14,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,9 +44,6 @@ class UserControllerTest {
 
     @MockitoBean
     private KeycloakService keycloakService;
-
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -175,36 +179,71 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserByEmailWhenUserByEmailExist() throws Exception {
-        long id = 1L;
-        String email = "user@example.com";
+    void getUserPagingAndSortWhenUsersExist() throws Exception {
+        List<User> users = new ArrayList<>() {{
+            for (int i = 0; i < 5; i++) {
+                add(User.builder()
+                        .id((long) i)
+                        .lastName("test" + i)
+                        .email("user" + i + "@gmail.com")
+                        .build());
+            }
+        }};
+        Pageable pageable = PageRequest.of(0, 5);
 
-        when(userService.getUserByEmail(email)).thenReturn(User.builder()
-                .id(id)
-                .email(email)
-                .build());
+        Page<User> page = new PageImpl<>(
+                users,
+                pageable,
+                users.size()
+        );
 
-        mockMvc.perform(get("/api/v1/by-email/{email}", email)
-                    .contentType(MediaType.APPLICATION_JSON))
+        when(userService.getUserByPaginateAndSort(any(Pageable.class))).thenReturn(page);
+
+        mockMvc.perform(get("/api/v1/")
+                .param("page", "0")
+                .param("size", "5")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.email").value("user@example.com"));
+                .andExpect(jsonPath("$.content.length()").value(5))
+                .andExpect(jsonPath("$.content[0].lastName").value("test0"))
+                .andExpect(jsonPath("$.content[1].lastName").value("test1"))
+                .andExpect(jsonPath("$.totalElements").value(5))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(5));
+
     }
 
     @Test
-    void getUserProneNumberWhenUserByPhoneNumberExist() throws Exception {
-        long id = 1L;
-        String phoneNumber = "+999999999999";
+    void searchUserWhenUsersExist() throws Exception {
+        Pageable pageable = PageRequest.of(0, 5);
+        Page<User> page = new PageImpl<>(
+                List.of(User.builder()
+                                .id(1L)
+                                .lastName("test1")
+                                .email("user1@gmail.com")
+                        .build()),
+                pageable,
+                1
+        );
 
-        when(userService.getUserByPhoneNumber(phoneNumber)).thenReturn(
-                User.builder()
-                        .id(id)
-                        .phoneNumber(phoneNumber)
-                        .build());
-        mockMvc.perform(get("/api/v1/by-phone/{phone}", phoneNumber)
-                    .contentType(MediaType.APPLICATION_JSON))
+        UserSearchDto userSearchDto = new UserSearchDto(null, "test1", null, null,
+                "user1@gmail.com", null, null);
+
+        when(userService.searchUserByFilter(eq(userSearchDto), any(Pageable.class))).thenReturn(page);
+
+        mockMvc.perform(post("/api/v1/search")
+                        .param("page", "0")
+                        .param("size", "5")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .characterEncoding("UTF-8")
+                    .content(objectMapper.writeValueAsString(userSearchDto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.phoneNumber").value(phoneNumber));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].lastName").value("test1"))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.number").value(0))
+                .andExpect(jsonPath("$.size").value(5));
     }
 }

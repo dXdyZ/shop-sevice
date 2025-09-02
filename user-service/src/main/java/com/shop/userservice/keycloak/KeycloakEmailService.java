@@ -1,5 +1,6 @@
 package com.shop.userservice.keycloak;
 
+import com.shop.userservice.util.LogMarker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
@@ -17,10 +18,6 @@ import java.time.Duration;
 @Slf4j
 @Service
 public class KeycloakEmailService {
-    private static final Marker NOTIFY = MarkerFactory.getMarker("NOTIFY");
-    private static final Marker ERROR = MarkerFactory.getMarker("ERROR");
-    private static final Marker AUDIT = MarkerFactory.getMarker("AUDIT");
-
     private static final long SLOW_THRESHOLD_MS = 5000L;
 
     private final Keycloak keycloak;
@@ -68,14 +65,14 @@ public class KeycloakEmailService {
             long elapsed = System.currentTimeMillis() - start;
 
             if (elapsed > SLOW_THRESHOLD_MS) {
-                log.warn(NOTIFY, "service=Keycloak | action=verifyEmail | SLOW | ms={} | username={} | email={} | userUUID={}",
+                log.warn(LogMarker.NOTIFY.getMarker(), "service=Keycloak | action=verifyEmail | SLOW | ms={} | username={} | email={} | userUUID={}",
                         elapsed, username, email, userId);
             } else {
-                log.debug(NOTIFY, "service=Keycloak | action=verifyEmail | ms={} | username={} | email={} | userUUID={}",
+                log.debug(LogMarker.NOTIFY.getMarker(), "service=Keycloak | action=verifyEmail | ms={} | username={} | email={} | userUUID={}",
                         elapsed, username, email, userId);
             }
 
-            log.info(AUDIT,  "action=verifyEmail | userId={} | username={} | status=SUCCESS", userId, username);
+            log.info(LogMarker.AUDIT.getMarker(),  "action=verifyEmail | userId={} | username={} | status=SUCCESS", userId, username);
 
         } catch (ProcessingException exception) {
             throw exception;
@@ -83,7 +80,7 @@ public class KeycloakEmailService {
     }
 
     public void sendVerifyEmailFallback(String userId, String username, String email, Throwable throwable) {
-        log.error(ERROR, "service=Keycloak | verifyEmail FAILED after retries | username={} | email={} | userId={} | cause={}",
+        log.error(LogMarker.ERROR.getMarker(), "service=Keycloak | verifyEmail FAILED after retries | username={} | email={} | userId={} | cause={}",
                 username, email, userId, throwable.getMessage());
     }
 }

@@ -10,7 +10,11 @@ import java.util.UUID;
 @Setter
 @Entity
 @Builder
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "userUUID"),
+        @UniqueConstraint(columnNames = "email"),
+        @UniqueConstraint(columnNames = "phoneNumber")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -30,13 +34,13 @@ public class User {
     @Column(name = "patronymic", nullable = false, length = 50)
     private String patronymic;
 
-    @Column(name = "prone_number", nullable = false, length = 20)
+    @Column(name = "phone_number", nullable = false, length = 20)
     private String phoneNumber;
 
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
     @Builder.Default
-    @Column(name = "create_at", nullable = false)
-    private OffsetDateTime createAt = OffsetDateTime.now();
+    @Column(name = "created_at", nullable = false)
+    private OffsetDateTime createdAt = OffsetDateTime.now();
 }

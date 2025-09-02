@@ -37,7 +37,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  name: prone_number
+                  name: phone_number
                   type: VARCHAR(20)
               - column:
                   constraints:
@@ -47,7 +47,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  name: create_at
+                  name: created_at
                   type: timestamp
             tableName: users
 

@@ -3,6 +3,7 @@ package com.shop.userservice.controller;
 import com.shop.userservice.dto.ErrorResponse;
 import com.shop.userservice.dto.UserDto;
 import com.shop.userservice.dto.UserRegistrationDto;
+import com.shop.userservice.dto.UserSearchDto;
 import com.shop.userservice.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -157,108 +162,10 @@ public interface UserControllerDocs {
     ResponseEntity<UserDto> getUserByUUID(@NotNull(message = "The user's UUID must be specified") @PathVariable UUID uuid);
 
 
-    @Operation(summary = "Get user by email")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Successful completion of the request",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserDto.class))),
-                    @ApiResponse(responseCode = "404", description = "The user with such data does not exist",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "USER_NOT_FOUND",
-                                                "httpCode": 404,
-                                                "message": "User by email: martos@example.com not found",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                            }
-                                            """))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input data",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "VALIDATION_FAILED",
-                                                "httpCode": 400,
-                                                "message": "Validation error",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                                "details": {
-                                                    "email": "The user's email must be specified",
-                                                }
-                                            }
-                                            """))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input data",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "VALIDATION_FAILED",
-                                                "httpCode": 400,
-                                                "message": "Validation error",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                                "details": {
-                                                    "email": "The email must comply with the standards",
-                                                }
-                                            }
-                                            """)))
-            }
-    )
-    ResponseEntity<UserDto> getUserByEmail(@PathVariable
-                                           @NotBlank(message = "The user's email must be specified")
-                                           @Email(message = "The email must comply with the standards") String email);
 
-
-    @Operation(summary = "Get user by phone number")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Successful completion of the request",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UserDto.class))),
-                    @ApiResponse(responseCode = "404", description = "The user with such data does not exist",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "USER_NOT_FOUND",
-                                                "httpCode": 404,
-                                                "message": "User by phone number: +88888888888 not found",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                            }
-                                            """))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input data",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "VALIDATION_FAILED",
-                                                "httpCode": 400,
-                                                "message": "Validation error",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                                "details": {
-                                                    "phone": "The user's phone number must be specified",
-                                                }
-                                            }
-                                            """))),
-                    @ApiResponse(responseCode = "400", description = "Invalid input data",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = ErrorResponse.class),
-                                    examples = @ExampleObject(value = """
-                                            {
-                                                "messageCode": "VALIDATION_FAILED",
-                                                "httpCode": 400,
-                                                "message": "Validation error",
-                                                "timestamp": "2025-08-24T20:00:00Z"
-                                                "details": {
-                                                    "phone": "The phone number must comply with the standard",
-                                                }
-                                            }
-                                            """)))
-            }
-    )
-    ResponseEntity<UserDto> getUserProneNumber(@PathVariable @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "The phone number must comply with the standard")
-                                               @NotBlank(message = "The user's phone number must be specified") String phone);
-
+    ResponseEntity<Page<UserDto>> searchUser(@RequestBody UserSearchDto userSearchDto,
+                                                    @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+                                                    Pageable pageable);
 
 
     @Operation(summary = "Delete user by id")

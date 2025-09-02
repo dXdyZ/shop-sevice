@@ -32,7 +32,7 @@ public class UserRegistrationDto {
     @Schema(description = "First name", example = "Alexander")
     private String firstName;
 
-    @NotBlank(message = "The paronymic must be specified")
+    @NotBlank(message = "The patronymic must be specified")
     @Size(min = 1, max = 50, message = "The patronymic must be in the range from 1 to 50 characters")
     @Schema(description = "patronymic", example = "Aleksandrovich")
     private String patronymic;
@@ -43,6 +43,7 @@ public class UserRegistrationDto {
     private String phoneNumber;
 
     @Email(message = "The email must be in a standard format")
+    @NotBlank(message = "The email must be specified")
     @Schema(description = "User's email address", example = "martos@example.com")
     private String email;
 

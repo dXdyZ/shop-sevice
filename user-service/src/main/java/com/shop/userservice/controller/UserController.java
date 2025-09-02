@@ -2,12 +2,18 @@ package com.shop.userservice.controller;
 
 import com.shop.userservice.dto.UserDto;
 import com.shop.userservice.dto.UserRegistrationDto;
+import com.shop.userservice.dto.UserSearchDto;
 import com.shop.userservice.security.UserPrincipal;
 import com.shop.userservice.service.UserService;
+import com.shop.userservice.util.NormalizerPhoneNumber;
 import com.shop.userservice.util.factory.UserDtoFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,6 +33,7 @@ public class UserController implements UserControllerDocs {
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
+        userRegistrationDto.setPhoneNumber(NormalizerPhoneNumber.normalizerPhone(userRegistrationDto.getPhoneNumber()));
         userService.registrationUser(userRegistrationDto);
     }
 
@@ -40,14 +47,17 @@ public class UserController implements UserControllerDocs {
         return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByUUID(uuid)));
     }
 
-    @GetMapping("/by-email/{email}")
-    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByEmail(email)));
+    @GetMapping
+    public ResponseEntity<Page<UserDto>> getUserPagingAndSort(@PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+                                                                  Pageable pageable) {
+        return ResponseEntity.ok(userService.getUserByPaginateAndSort(pageable).map(UserDtoFactory::createUserDto));
     }
 
-    @GetMapping("/by-phone/{phone}")
-    public ResponseEntity<UserDto> getUserProneNumber(@PathVariable String phone) {
-        return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByPhoneNumber(phone)));
+    @PostMapping("/search")
+    public ResponseEntity<Page<UserDto>> searchUser(@RequestBody UserSearchDto userSearchDto,
+                                                    @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+                                                    Pageable pageable) {
+        return ResponseEntity.ok(userService.searchUserByFilter(userSearchDto, pageable).map(UserDtoFactory::createUserDto));
     }
 
     @DeleteMapping("/{id}")

@@ -38,7 +38,7 @@ public class OpenAPIConfig {
                                 .name("sort")
                                 .schema(new StringSchema())))
                 .info(new Info()
-                        .title("Bank system")
-                        .version("1.0.0"));
+                        .title("Shop: User-service")
+                        .version("0.0.0"));
     }
 }

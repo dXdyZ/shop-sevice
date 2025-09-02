@@ -1,7 +1,10 @@
 package com.shop.userservice.service;
 
 import com.shop.userservice.dto.UserRegistrationDto;
+import com.shop.userservice.dto.UserSearchDto;
 import com.shop.userservice.entity.User;
+import com.shop.userservice.exception.ExternalServiceUnavailableException;
+import com.shop.userservice.exception.IternalServerError;
 import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.exception.UserNotFoundException;
 import com.shop.userservice.keycloak.KeycloakService;
@@ -10,10 +13,11 @@ import com.shop.userservice.util.LogMarker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -24,7 +28,17 @@ public class UserService {
     private final KeycloakService keycloakService;
 
 
-    public void registrationUser(UserRegistrationDto userRegistrationDto) throws UserDuplicateException {
+    @Transactional
+    public void registrationUser(UserRegistrationDto userRegistrationDto)
+            throws UserDuplicateException, ExternalServiceUnavailableException {
+
+        if (userRepository.existsByEmail(userRegistrationDto.getEmail())) {
+            throw new UserDuplicateException("User with email exists");
+        }
+        if (userRepository.existsByPhoneNumber(userRegistrationDto.getPhoneNumber())) {
+            throw new UserDuplicateException("User with phone number exists");
+        }
+
         String userUUID = keycloakService.createUser(userRegistrationDto.getUsername(), userRegistrationDto.getFirstName(),
                 userRegistrationDto.getLastName(), userRegistrationDto.getEmail(), userRegistrationDto.getPassword());
 
@@ -37,12 +51,21 @@ public class UserService {
                 .email(userRegistrationDto.getEmail())
                 .build();
 
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException exception) {
+            try {
+                keycloakService.deleteUserByUUID(userUUID);
+            } catch (UserNotFoundException ignore) {}
+
+            log.error(LogMarker.ERROR.getMarker(), "service=User-service | error SAVING the user | username={} | message={}",
+                    userRegistrationDto.getUsername(), exception.getMessage());
+
+            throw new IternalServerError("Server error - try again later");
+        }
     }
 
     public User getUserByUUID(UUID uuid) {
-
-        
         return userRepository.findByUserUUID(uuid).orElseThrow(
                 () -> new UserNotFoundException("User by uuid: %s not found".formatted(uuid)));
     }
@@ -69,7 +92,17 @@ public class UserService {
 
         userRepository.delete(user);
 
-        log.info(LogMarker.AUDIT.getMarker(), "action=deleteUser | deletedUserId={} | deletedUsername={} | performedBy={}",
+        keycloakService.deleteUserByUUID(user.getUserUUID().toString());
+
+        log.info(LogMarker.AUDIT.getMarker(), "service=User-service | action=deleteUser | deletedUserId={} | deletedUsername={} | performedBy={}",
                 user.getId(), user.getEmail(), adminName);
+    }
+
+    public Page<User> getUserByPaginateAndSort(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    public Page<User> searchUserByFilter(UserSearchDto userSearchDto, Pageable pageable) {
+        return userRepository.searchUser(userSearchDto, pageable);
     }
 }
