@@ -14,6 +14,9 @@
                   <Item>
                     <option name="path" value="user-service/src/main/resources/db/db.changelog-master.yaml" />
                   </Item>
+                  <Item>
+                    <option name="path" value="user-service/src/main/resources/db/migration/V1__Create_user_table.yaml" />
+                  </Item>
                 </list>
               </option>
             </SchemaInfo>

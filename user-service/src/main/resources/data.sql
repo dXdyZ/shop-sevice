@@ -1,0 +1,20 @@
+INSERT INTO users (user_uuid, first_name, last_name, patronymic, phone_number, email, created_at)
+VALUES
+    (
+        '401bd388-7359-454b-b142-cfc9c559951c',
+        'User',
+        'User',
+        'Сергеевич',
+        '79123456789',
+        'user@gmail.com',
+        NOW()
+    ),
+    (
+        'b2c3d4e5-f6a7-8901-bcde-f23456789012',
+        'Мария',
+        'Сидорова',
+        'Александровна',
+        '79234567890',
+        'maria.sidorova@example.com',
+        NOW()
+    );

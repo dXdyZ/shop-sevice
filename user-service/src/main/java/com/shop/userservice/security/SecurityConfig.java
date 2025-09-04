@@ -38,6 +38,7 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/error").permitAll()
                         .requestMatchers("/api/v1/registration").permitAll()
+                        .requestMatchers("/api/v1/*").hasRole("USER")
                         .requestMatchers("/api/v1/by-phone/**", "/api/v1/by-uuid/**", "/api/v1/by-email/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("USER"))
                 .oauth2ResourceServer(oauth2 -> oauth2

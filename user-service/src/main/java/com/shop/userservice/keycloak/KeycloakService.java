@@ -5,7 +5,6 @@ import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.exception.UserNotFoundException;
 import com.shop.userservice.util.LogMarker;
 import io.github.resilience4j.retry.annotation.Retry;
-import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.WebApplicationException;
@@ -148,7 +147,7 @@ public class KeycloakService {
     }
 
     public String createUserFallback(String username, String firstName,
-                                   String lastName, String email, String password, Throwable throwable) {
+                                   String lastName, String email, String password, ProcessingException throwable) {
 
         log.error(LogMarker.INFRA_ERROR.getMarker(), "service=Keycloak | CONNECTION ERROR | cause={}", throwable.getMessage());
 

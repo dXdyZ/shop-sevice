@@ -135,4 +135,12 @@
             <appender-ref ref="INFRA_ERROR"/>
         </root>
     </springProfile>
+
+    <springProfile name="integration">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        <logger name="org.hibernate.SQL" level="DEBUG"/>
+        <logger name="org.hibernate.orm.jdbc.bind" level="TRACE"/>
+    </springProfile>
 </configuration>

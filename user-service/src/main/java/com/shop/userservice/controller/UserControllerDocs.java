@@ -39,7 +39,7 @@ public interface UserControllerDocs {
                                             {
                                                 "messageCode": "DUPLICATE_USER",
                                                 "httpCode": 409,
-                                                "message": "User with email/username exists",
+                                                "message": "User exists with same username "or email"",
                                                 "timestamp": "2025-08-24T20:00:00Z"
                                             }
                                             """))),
@@ -102,7 +102,7 @@ public interface UserControllerDocs {
                                                 "message": "Validation error",
                                                 "timestamp": "2025-08-24T20:00:00Z"
                                                 "details": {
-                                                    "id": "The user ID must be greater than zero",
+                                                    "id": "The user id must be greater than zero",
                                                 }
                                             }
                                             """))),
@@ -122,7 +122,7 @@ public interface UserControllerDocs {
                                             """)))
             }
     )
-    ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 0, message = "The user ID must be greater than zero")
+    ResponseEntity<UserDto> getUserById(@PathVariable @Min(value = 0, message = "The user id must be greater than zero")
                                         @NotNull(message = "The user's id must be specified") Long id);
 
 
