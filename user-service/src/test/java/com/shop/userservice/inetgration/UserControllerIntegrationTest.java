@@ -4,11 +4,11 @@ import com.shop.userservice.dto.ErrorResponse;
 import com.shop.userservice.dto.UserDto;
 import com.shop.userservice.dto.UserRegistrationDto;
 import com.shop.userservice.entity.User;
+import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.keycloak.KeycloakEmailService;
 import com.shop.userservice.keycloak.KeycloakService;
 import com.shop.userservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -22,8 +22,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-
+import static org.mockito.Mockito.*;
 
 
 @Slf4j
@@ -33,7 +32,7 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest{
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
+    @MockitoBean
     private KeycloakService keycloakService;
 
     @Autowired
@@ -41,12 +40,6 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest{
 
     @MockitoBean
     private KeycloakEmailService keycloakEmailService;
-
-
-    @BeforeEach
-    void setupMocks() {
-        doNothing().when(keycloakEmailService).sendVerifyEmail(anyString(), anyString(), anyString());
-    }
 
     @Test
     void getUserById_ShouldReturnSuccessResponse_WhenUserExist() {
@@ -117,6 +110,11 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest{
 
     @Test
     void registrationUser_ShouldReturnSuccessResponse_WhenDuplicateUserDoesNotExist() {
+        when(keycloakService.createUser(anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenReturn("11111111-1111-1111-1111-111111111111");
+        doNothing().when(keycloakEmailService).sendVerifyEmail(anyString(), anyString(), anyString());
+
+
         String email = "userTest@gmail.com";
 
         UserRegistrationDto userReg = UserRegistrationDto.builder()
@@ -140,13 +138,17 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest{
         Optional<User> newUser = userRepository.findByEmail(email);
         assertThat(newUser).isPresent();
         assertThat(newUser.get().getUserUUID()).isNotNull().isInstanceOf(UUID.class);
+
+        verify(keycloakService, times(1))
+                .createUser(eq("testUser"), eq("Test"), eq("User"), eq(email), eq("password"));
     }
 
     @Test
     void registerUser_ShouldReturnConflict_WhenUserWithSameUsernameExistsInKeycloak() throws InterruptedException {
-        String username = "another";
+        when(keycloakService.createUser(anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new UserDuplicateException("User exists with same username"));
 
-        keycloakService.createUser(username, "NewTestUser", "NewTestUserLastName", "newTestUser@gmail.com", "password");
+        String username = "another";
 
         UserRegistrationDto userReg = UserRegistrationDto.builder()
                 .username(username)
@@ -157,8 +159,6 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest{
                 .email("anotherTest@gmail.com")
                 .password("password")
                 .build();
-
-        Thread.sleep(5000);
 
         ResponseEntity<ErrorResponse> response = restTemplate.postForEntity(
                 "/api/v1/registration",
@@ -172,6 +172,38 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest{
 
         assertThat(response.getBody().getMessageCode()).isEqualTo("DUPLICATE_USER");
         assertThat(response.getBody().getMessage()).isEqualTo("User exists with same username");
+    }
+
+    @Test
+    void registerUser_ShouldReturnConflict_WhenUserWithSameEmailExistsInKeycloak() {
+        when(keycloakService.createUser(anyString(), anyString(), anyString(), anyString(), anyString()))
+                .thenThrow(new UserDuplicateException("User exists with same email"));
+
+        String email = "testEmailExists@gmail.com";
+
+
+        UserRegistrationDto userReg = UserRegistrationDto.builder()
+                .username("NewUser")
+                .lastName("User")
+                .firstName("Test")
+                .patronymic("User")
+                .phoneNumber("+79062345324")
+                .email(email)
+                .password("password")
+                .build();
+
+        ResponseEntity<ErrorResponse> response = restTemplate.postForEntity(
+                "/api/v1/registration",
+                userReg,
+                ErrorResponse.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+
+        assertThat(response.getBody()).isNotNull();
+
+        assertThat(response.getBody().getMessageCode()).isEqualTo("DUPLICATE_USER");
+        assertThat(response.getBody().getMessage()).isEqualTo("User exists with same email");
     }
 }
 

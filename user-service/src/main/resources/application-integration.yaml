@@ -19,6 +19,18 @@ spring:
       mode: always
       data-locations: classpath:data.sql
 
+keycloak:
+  server-url: http://localhost:0
+  realms:
+    admin-realms:
+      realm: master
+      username: admin
+      password: admin
+      client:
+        client-id: admin-cli
+    service-realms:
+      realm: shop
+
 resilience4j:
   retry:
     instances:
