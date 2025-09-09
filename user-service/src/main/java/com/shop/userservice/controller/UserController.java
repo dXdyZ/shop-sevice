@@ -1,8 +1,10 @@
 package com.shop.userservice.controller;
 
+import com.shop.userservice.dto.PageResponse;
 import com.shop.userservice.dto.UserDto;
 import com.shop.userservice.dto.UserRegistrationDto;
 import com.shop.userservice.dto.UserSearchDto;
+import com.shop.userservice.exception.ValidationException;
 import com.shop.userservice.security.UserPrincipal;
 import com.shop.userservice.service.UserService;
 import com.shop.userservice.util.NormalizerPhoneNumber;
@@ -20,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -43,21 +46,33 @@ public class UserController implements UserControllerDocs {
     }
 
     @GetMapping("/by-uuid/{uuid}")
-    public ResponseEntity<UserDto> getUserByUUID(@PathVariable UUID uuid) {
+    public ResponseEntity<UserDto> getUserByUUID(@PathVariable("uuid") String rawUuid) {
+        String value = rawUuid == null ? "" : rawUuid.trim();
+
+        if (value.isEmpty()) {
+            throw new ValidationException(Map.of("uuid", "The user's UUID must be specified"));
+        }
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(value);
+        } catch (IllegalArgumentException exception) {
+            throw new ValidationException(Map.of("uuid", "The user's UUID must be a valid UUID format"));
+        }
+
         return ResponseEntity.ok(UserDtoFactory.createUserDto(userService.getUserByUUID(uuid)));
     }
 
     @GetMapping
-    public ResponseEntity<Page<UserDto>> getUserPagingAndSort(@PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+    public ResponseEntity<PageResponse<UserDto>> getUserPagingAndSort(@PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
                                                                   Pageable pageable) {
-        return ResponseEntity.ok(userService.getUserByPaginateAndSort(pageable).map(UserDtoFactory::createUserDto));
+        return ResponseEntity.ok(PageResponse.from(userService.getUserByPaginateAndSort(pageable).map(UserDtoFactory::createUserDto)));
     }
 
     @PostMapping("/search")
-    public ResponseEntity<Page<UserDto>> searchUser(@RequestBody UserSearchDto userSearchDto,
+    public ResponseEntity<PageResponse<UserDto>> searchUser(@RequestBody UserSearchDto userSearchDto,
                                                     @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
                                                     Pageable pageable) {
-        return ResponseEntity.ok(userService.searchUserByFilter(userSearchDto, pageable).map(UserDtoFactory::createUserDto));
+        return ResponseEntity.ok(PageResponse.from(userService.searchUserByFilter(userSearchDto, pageable).map(UserDtoFactory::createUserDto)));
     }
 
     @DeleteMapping("/{id}")

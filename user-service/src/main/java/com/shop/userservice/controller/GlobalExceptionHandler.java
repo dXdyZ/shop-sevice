@@ -1,8 +1,10 @@
 package com.shop.userservice.controller;
 
 import com.shop.userservice.dto.ErrorResponse;
+import com.shop.userservice.exception.ExternalServiceUnavailableException;
 import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.exception.UserNotFoundException;
+import com.shop.userservice.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
@@ -43,6 +45,18 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(ExternalServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleExternalServiceUnavailable(ExternalServiceUnavailableException exception) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ErrorResponse.builder()
+                        .messageCode("SERVER_ERROR")
+                        .httpCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .message(exception.getMessage())
+                        .timestamp(Instant.now())
+                        .build());
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException exception) {
         Map<String, String> errors = exception.getBindingResult()
@@ -59,6 +73,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errorResponse);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(ValidationException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.validationError(exception.getErrors()));
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

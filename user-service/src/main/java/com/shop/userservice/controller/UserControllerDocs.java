@@ -1,9 +1,6 @@
 package com.shop.userservice.controller;
 
-import com.shop.userservice.dto.ErrorResponse;
-import com.shop.userservice.dto.UserDto;
-import com.shop.userservice.dto.UserRegistrationDto;
-import com.shop.userservice.dto.UserSearchDto;
+import com.shop.userservice.dto.*;
 import com.shop.userservice.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -159,12 +156,12 @@ public interface UserControllerDocs {
                                             """)))
             }
     )
-    ResponseEntity<UserDto> getUserByUUID(@NotNull(message = "The user's UUID must be specified") @PathVariable UUID uuid);
+    ResponseEntity<UserDto> getUserByUUID(@NotNull(message = "The user's UUID must be specified") @PathVariable String rawUuid);
 
 
 
-    ResponseEntity<Page<UserDto>> searchUser(@RequestBody UserSearchDto userSearchDto,
-                                                    @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
+    ResponseEntity<PageResponse<UserDto>> searchUser(@RequestBody UserSearchDto userSearchDto,
+                                                     @PageableDefault(page = 0, size = 20, sort = "id", direction = Sort.Direction.ASC)
                                                     Pageable pageable);
 
 

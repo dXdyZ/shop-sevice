@@ -47,11 +47,11 @@ class KeycloakServiceTest {
     private KeycloakService keycloakService;
     private Response response;
 
-    private String username = "user";
-    private String firstName = "user";
-    private String lastName = "user";
-    private String email = "user@gmail.com";
-    private String password = "password";
+    private final String username = "user";
+    private final String firstName = "user";
+    private final String lastName = "user";
+    private final String email = "user@gmail.com";
+    private final String password = "password";
 
     @BeforeEach
     void setUp() throws URISyntaxException {

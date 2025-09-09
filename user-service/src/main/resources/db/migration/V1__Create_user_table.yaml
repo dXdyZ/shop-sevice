@@ -18,6 +18,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
+                    unique: true
                   name: user_uuid
                   type: UUID
               - column:
