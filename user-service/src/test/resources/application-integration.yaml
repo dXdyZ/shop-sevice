@@ -47,6 +47,10 @@ resilience4j:
       keycloakDeleteUser:
         maxAttempts: 1
         waitDuration: 10ms
+        retryExceptions:
+          - jakarta.ws.rs.WebApplicationException
+        ignoreExceptions:
+          - com.shop.userservice.exception.UserNotFoundException
 
 logging:
   level:

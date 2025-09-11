@@ -4,6 +4,7 @@ import com.shop.userservice.dto.*;
 import com.shop.userservice.entity.User;
 import com.shop.userservice.exception.ExternalServiceUnavailableException;
 import com.shop.userservice.exception.UserDuplicateException;
+import com.shop.userservice.inetgration.config.BasePostgresIntegrationTest;
 import com.shop.userservice.keycloak.KeycloakEmailService;
 import com.shop.userservice.keycloak.KeycloakService;
 import com.shop.userservice.repository.UserRepository;
@@ -12,12 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.jdbc.Sql;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -368,15 +367,15 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest {
     }
 
     @Test
-    void getUserPagingAndSort_ShouldReturnSuccessResult_WhenUserExists() {
+    void getUserPagingAndSort_ShouldReturnSuccessResult_WhenUserExist() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth("test-token");
+        headers.setBearerAuth("admin-token");
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         ResponseEntity<PageResponse<UserDto>> response = restTemplate.exchange(
-                "/api/v1/",
-                HttpMethod.POST,
+                "/api/v1",
+                HttpMethod.GET,
                 entity,
                 new ParameterizedTypeReference<>() {}
         );
@@ -394,6 +393,28 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest {
                 .hasSize(2)
                 .extracting(UserDto::getEmail)
                 .containsExactly("user@gmail.com", "maria.sidorova@example.com");
+    }
+
+    @Test
+    void getUserPagingAndSort_ShouldReturnSuccessResult_WhenUserDoesNotExist() {
+        userRepository.deleteAll();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("admin-token");
+
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<PageResponse<UserDto>> response = restTemplate.exchange(
+                "/api/v1",
+                HttpMethod.GET,
+                entity,
+                new ParameterizedTypeReference<>() {}
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getTotalPages()).isEqualTo(0);
+        assertThat(response.getBody().getTotalElement()).isEqualTo(0);
     }
 }
 

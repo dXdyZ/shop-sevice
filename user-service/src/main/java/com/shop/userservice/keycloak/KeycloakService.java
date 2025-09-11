@@ -11,9 +11,11 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.ErrorRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -65,8 +67,6 @@ public class KeycloakService {
         user.setEnabled(true);
         user.setRequiredActions(List.of("VERIFY_EMAIL"));
         user.setCredentials(List.of(credential));
-        user.setRealmRoles(List.of("app-user"));
-
 
         try (Response response = keycloak.realm(realm).users().create(user)) {
             int status = response.getStatus();
@@ -85,6 +85,8 @@ public class KeycloakService {
                 }
 
                 keycloakEmailService.sendVerifyEmail(userId, username, email);
+
+                assignRealmRole(userId);
 
                 log.info(LogMarker.AUDIT.getMarker(), "action=createUser | userId={} | username={} | status=SUCCESS", userId, username);
 
@@ -129,7 +131,6 @@ public class KeycloakService {
                 userResource.toRepresentation();
             } catch (NotFoundException ignore) {
                 throw new UserNotFoundException("User by uuid: %s not found".formatted(uuid));
-
             }
 
             userResource.remove();
@@ -154,10 +155,16 @@ public class KeycloakService {
         throw new ExternalServiceUnavailableException("Connection service error");
     }
 
-    public void deleteUserByUUIDFallback(String uuid, Throwable throwable) {
+    public void deleteUserByUUIDFallback(String uuid, WebApplicationException throwable) {
         log.warn(LogMarker.ERROR.getMarker(), "service=Keycloak | error DELETE user | userId={} | message={}",
                 uuid, throwable.getMessage());
 
         throw new ExternalServiceUnavailableException("Connection service error");
+    }
+
+    private void assignRealmRole(String userId) {
+        RealmResource realmResource = keycloak.realm(realm);
+        RoleRepresentation roleRepresentation = realmResource.roles().get("app-user").toRepresentation();
+        realmResource.users().get(userId).roles().realmLevel().add(List.of(roleRepresentation));
     }
 }

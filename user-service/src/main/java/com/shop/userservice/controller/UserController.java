@@ -29,7 +29,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1")
 public class UserController implements UserControllerDocs {
     private final UserService userService;
 

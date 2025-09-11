@@ -3,6 +3,7 @@ package com.shop.userservice.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
@@ -13,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Profile("!no-security")
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -39,8 +41,8 @@ public class SecurityConfig {
                                 "/error").permitAll()
                         .requestMatchers("/api/v1/registration").permitAll()
                         .requestMatchers("/api/v1/{id}", "/api/v1/by-uuid/{uuid}").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/v1").hasRole("")
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasRole("USER"))
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/v1", "/api/v1/search").hasRole("ADMIN"))
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
                                 .jwtAuthenticationConverter(userJwtConverter)))

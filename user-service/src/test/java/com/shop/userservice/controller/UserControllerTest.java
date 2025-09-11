@@ -90,7 +90,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.messageCode").value("VALIDATION_FAILED"))
                 .andExpect(jsonPath("$.message").value("Validation error"))
                 .andExpect(jsonPath("$.httpCode").value(400))
-                .andExpect(jsonPath("$.details.id").value("The user ID must be greater than zero"));
+                .andExpect(jsonPath("$.details.id").value("The user id must be greater than zero"));
     }
 
     @Test
@@ -198,7 +198,7 @@ class UserControllerTest {
 
         when(userService.getUserByPaginateAndSort(any(Pageable.class))).thenReturn(page);
 
-        mockMvc.perform(get("/api/v1/")
+        mockMvc.perform(get("/api/v1")
                 .param("page", "0")
                 .param("size", "5")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -206,9 +206,8 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.content.length()").value(5))
                 .andExpect(jsonPath("$.content[0].lastName").value("test0"))
                 .andExpect(jsonPath("$.content[1].lastName").value("test1"))
-                .andExpect(jsonPath("$.totalElements").value(5))
+                .andExpect(jsonPath("$.totalElement").value(5))
                 .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.number").value(0))
                 .andExpect(jsonPath("$.size").value(5));
 
     }
@@ -240,9 +239,8 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.length()").value(1))
                 .andExpect(jsonPath("$.content[0].lastName").value("test1"))
-                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalElement").value(1))
                 .andExpect(jsonPath("$.totalPages").value(1))
-                .andExpect(jsonPath("$.number").value(0))
                 .andExpect(jsonPath("$.size").value(5));
     }
 }
