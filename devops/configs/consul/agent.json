@@ -1,0 +1,6 @@
+{
+  "acl": {
+    "enabled": false,
+    "default_policy": "allow"
+  }
+}

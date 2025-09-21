@@ -3,6 +3,11 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
 
+    <springProperty name="LOG_DIR" source="logging.file.path" defaultValue="../devops/logs/user-service/"/>
+
+    <propery name="MARKER_APP_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n"/>
+
+<!--    TODO настроить маркеры для prod конфига-->
     <springProfile name="prod">
         <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
             <http>
@@ -26,13 +31,13 @@
 
     <springProfile name="dev">
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service.log</file>
+            <file>${LOG_DIR}/user-service.log</file>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>${LOG_DIR}/user-service-%d{yyyy-MM-dd}.log</fileNamePattern>
                 <maxHistory>7</maxHistory>
             </rollingPolicy>
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+                <pattern>${FILE_LOG_PATTERN}</pattern>
             </encoder>
             <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
                 <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
@@ -46,12 +51,10 @@
         </appender>ResponseStatus
 
         <appender name="APP_CALL" class="ch.qos.logback.core.FileAppender">
-            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-app-call.log</file>
-
+            <file>${LOG_DIR}/user-service-app-call.log</file>
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern>
+                <pattern>${MARKER_APP_PATTERN}</pattern>
             </encoder>
-
             <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
                 <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
                     <marker>APP_CALL</marker>
@@ -62,10 +65,10 @@
         </appender>
 
         <appender name="ERROR" class="ch.qos.logback.core.FileAppender">
-            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-error.log</file>
+            <file>${LOG_DIR}/user-service-error.log</file>
 
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern>
+                <pattern>${MARKER_APP_PATTERN}</pattern>
             </encoder>
 
             <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -78,10 +81,10 @@
         </appender>
 
         <appender name="AUDIT" class="ch.qos.logback.core.FileAppender">
-            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-audit.log</file>
+            <file>${LOG_DIR}/user-service-audit.log</file>
 
             <encoder>
-                <pattern><pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern></pattern>
+                <pattern>${MARKER_APP_PATTERN}</pattern>
             </encoder>
 
             <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -94,10 +97,10 @@
         </appender>
 
         <appender name="NOTIFY" class="ch.qos.logback.core.FileAppender">
-            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-notify.log</file>
+            <file>${LOG_DIR}/user-service-notify.log</file>
 
             <encoder>
-                <pattern><pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern></pattern>
+                <pattern>${MARKER_APP_PATTERN}</pattern>
             </encoder>
 
             <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -110,10 +113,10 @@
         </appender>
 
         <appender name="INFRA_ERROR" class="ch.qos.logback.core.FileAppender">
-            <file>/home/another/Project/developering/shop-service/devops/logs/user-service/user-service-infra-error.log</file>
+            <file>${LOG_DIR}/user-service-infra-error.log</file>
 
             <encoder>
-                <pattern><pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level | %logger{36} | ip=%X{ip} | %msg%n</pattern></pattern>
+                <pattern>${MARKER_APP_PATTERN}</pattern>
             </encoder>
 
             <filter class="ch.qos.logback.core.filter.EvaluatorFilter">

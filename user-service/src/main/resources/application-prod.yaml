@@ -1,3 +1,16 @@
 spring:
+  config:
+    import:
+      - 'optional:consul:'
+      - 'classpath:application-dev.yaml'
   application:
     name: user-service
+  cloud:
+    consul:
+      port: 8500
+      host: localhost
+      discovery:
+        instance-id: user-service-i1
+      config:
+        format: yaml
+        data-key: data

@@ -1,5 +1,6 @@
 package com.shop.userservice.service;
 
+import com.shop.userservice.dto.UserDeleteEvent;
 import com.shop.userservice.dto.UserRegistrationDto;
 import com.shop.userservice.dto.UserSearchDto;
 import com.shop.userservice.entity.User;
@@ -10,13 +11,17 @@ import com.shop.userservice.exception.UserNotFoundException;
 import com.shop.userservice.keycloak.KeycloakService;
 import com.shop.userservice.repository.UserRepository;
 import com.shop.userservice.util.LogMarker;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.UUID;
 
@@ -26,7 +31,8 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final KeycloakService keycloakService;
-
+    private final UserCacheService userCacheService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public void registrationUser(UserRegistrationDto userRegistrationDto)
@@ -58,33 +64,44 @@ public class UserService {
                 keycloakService.deleteUserByUUID(userUUID);
             } catch (UserNotFoundException ignore) {}
 
-            log.error(LogMarker.ERROR.getMarker(), "service=User-service | error SAVING the user | username={} | message={}",
+            log.error(LogMarker.ERROR.getMarker(), "service=UserService | error SAVING the user | username={} | message={}",
                     userRegistrationDto.getUsername(), exception.getMessage());
 
             throw new IternalServerError("Server error - try again later");
         }
     }
 
+
+    @Cacheable(value = "users:byUUID", key = "#uuid")
     public User getUserByUUID(UUID uuid) {
         return userRepository.findByUserUUID(uuid).orElseThrow(
                 () -> new UserNotFoundException("User by uuid: %s not found".formatted(uuid)));
     }
 
+    @Cacheable(value = "users:byId", key = "#id")
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new UserNotFoundException("User by id: %s not found".formatted(id)));
     }
 
+    @Cacheable(value = "users:byEmail", key = "#email")
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
                 () -> new UserNotFoundException("User by email: %s not found".formatted(email)));
     }
 
+    @Cacheable(value = "users:ByPhone", key = "#phoneNumber")
     public User getUserByPhoneNumber(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber).orElseThrow(
                 () -> new UserNotFoundException("User by phone number: %s not found".formatted(phoneNumber)));
     }
 
+    /**
+     * Удаляет пользователя по id
+     *
+     * @param id пользователя которого нужно удалить
+     * @param adminName имя администратора который удалил пользователя
+     */
     @Transactional
     public void deleteUserById(Long id, String adminName) {
         User user = userRepository.findById(id).orElseThrow(
@@ -92,16 +109,46 @@ public class UserService {
 
         userRepository.delete(user);
 
-        keycloakService.deleteUserByUUID(user.getUserUUID().toString());
-
-        log.info(LogMarker.AUDIT.getMarker(), "service=User-service | action=deleteUser | deletedUserId={} | deletedUsername={} | performedBy={}",
-                user.getId(), user.getEmail(), adminName);
+        eventPublisher.publishEvent(new UserDeleteEvent(
+                user.getId(),
+                user.getUserUUID(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                adminName
+        ));
     }
 
+    /**
+     * Обработчик событий после коммита транзакции
+     *
+     * @param event данные удаленного пользователя
+     */
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+    public void handleUserDeletedEvent(UserDeleteEvent event) {
+        try {
+            userCacheService.evictUserCaches(
+                    event.id(),
+                    event.uuid(),
+                    event.email(),
+                    event.phoneNumber()
+            );
+
+            keycloakService.deleteUserByUUID(event.uuid().toString());
+
+            log.info(LogMarker.AUDIT.getMarker(), "service=UserService | action=deleteUser | deletedUserId={} | performedBy={}",
+                    event.id(), event.adminName());
+        } catch (Exception exception) {
+            log.error(LogMarker.ERROR.getMarker(), "service=UserService | DELETION ERROR | userId={} | adminName={} | causer={}",
+                    event.id(), event.adminName(), exception.getMessage());
+        }
+    }
+
+    @Transactional(readOnly = true)
     public Page<User> getUserByPaginateAndSort(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<User> searchUserByFilter(UserSearchDto userSearchDto, Pageable pageable) {
         return userRepository.searchUser(userSearchDto, pageable);
     }

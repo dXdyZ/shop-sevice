@@ -89,6 +89,34 @@ services:
     container_name: grafana-loki
     ports:
       - "3100:3100"
+
+  redis:
+    image: redis:7-alpine
+    hostname: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    environment:
+      REDIS_PASSWORD: redis
+      REDIS_ARGS: --appendonly yes
+
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    hostname: consul
+    ports:
+      - "8500:8500"
+    volumes:
+      - consul_data:/consul/data
+      - .configs/consul/agent.json:/consul/config/agent.json
+    command: agent -server -bootstrap-expect=1 -ui -client=0.0.0.0 -config-dir=/consul/config
+    environment:
+      - CONSUL_LOCAL_CONFIG={"datacenter":"dc1", "server":true, "enable_script_checks":true}
+
 volumes:
   postgres_user_data:
   postgres_keycloak_data:
+  redis_data:
+  consul_data:
