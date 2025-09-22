@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 @Builder
 @Table(name = "categories")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
@@ -21,6 +23,11 @@ public class Category {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @EqualsAndHashCode.Include
+    @Builder.Default
+    @Column(name = "public_id", nullable = false, updatable = false, unique = true)
+    private UUID publicId = UUID.randomUUID();
+
 //    Уникальная часть URL для категории (например, "smartfony")
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
@@ -29,7 +36,7 @@ public class Category {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name = "parent_id", nullable = false)
+    @JoinColumn(name = "parent_id")
     private Category parent;
 
 //    Флаг активности. Неактивные скрыты из каталога

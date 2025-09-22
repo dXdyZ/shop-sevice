@@ -5,12 +5,14 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.*;
 
 @Getter
 @Setter
 @Builder
 @Entity
 @Table(name = "products")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -21,10 +23,31 @@ public class Product {
 
     //Уникальный артикуль товара для склада
     @Column(name = "stock_keeping_unit", unique = true, nullable = false, length = 100)
-    private String stockKeepingUnit;
+    private String sku;
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @EqualsAndHashCode.Include
+    @Builder.Default
+    @Column(name = "public_id", nullable = false, unique = true, updatable = false)
+    private UUID publicId = UUID.randomUUID();
+
+    @ManyToOne
+    @JoinColumn(name = "primary_category_id")
+    private Category primaryCategory;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_categories",
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new LinkedHashSet<>();
 
     //Короткое описание товара
     @Column(name = "description")
@@ -69,8 +92,40 @@ public class Product {
     private Double heightCm;
 
     @Builder.Default
+    @Column(name = "rating_count")
+    private Integer ratingCount = 0;
+
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL
+    )
+    private List<ProductAttributeValue> attributeValues = new ArrayList<>();
+
+    @Builder.Default
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt = OffsetDateTime.now();
+
+    public void addAttributeValue(AttributeValue value) {
+        if (value == null) return;
+        boolean exists = attributeValues.stream()
+                .anyMatch(pav -> pav.getAttributeValue().getId().equals(value.getId()));
+        if (!exists) {
+            ProductAttributeValue link = new ProductAttributeValue(this, value);
+            attributeValues.add(link);
+        }
+    }
+
+    public void removeAttributeValue(AttributeValue value) {
+        if (value == null) return;
+        attributeValues.removeIf(pav -> {
+            boolean match = pav.getAttributeValue().getId().equals(value.getId());
+            if (match) {
+                pav.setProduct(null);
+                pav.setAttributeValue(null);
+            }
+            return match;
+        });
+    }
 }
 
 

@@ -4,12 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
 @Entity
 @Table(name = "brands")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Brand {
@@ -27,6 +31,15 @@ public class Brand {
 
     @Column(name = "description")
     private String description;
+
+    @EqualsAndHashCode.Include
+    @Builder.Default
+    @Column(name = "public_id", unique = true, nullable = false, updatable = false)
+    private UUID publicId = UUID.randomUUID();
+
+    @OneToMany
+    @JoinColumn(name = "products_id")
+    private List<Product> products;
 
 //    Флаг, указывающий активен ли бренд. Неактивные бренды скрыты из каталога
     @Builder.Default
