@@ -1,7 +1,9 @@
 package com.example.productcatalogservice.entity;
 
+import com.example.productcatalogservice.util.SkuGenerator;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -33,9 +35,8 @@ public class Product {
     private Brand brand;
 
     @EqualsAndHashCode.Include
-    @Builder.Default
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
-    private UUID publicId = UUID.randomUUID();
+    private UUID publicId;
 
     @ManyToOne
     @JoinColumn(name = "primary_category_id")
@@ -66,18 +67,16 @@ public class Product {
     private String currency = "RUB";
 
     //Флаг, разрешено ли показывать товар в каталоге. По умолчанию скрыт до проверки админом
-    @Builder.Default
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = false;
+    private Boolean isActive;
 
     //Флаг, разрешено ли добавить товар в корзину и купить. По умолчанию нельзя до проверки админом
-    @Builder.Default
     @Column(name = "is_available", nullable = false)
-    private Boolean isAvailable = false;
+    private Boolean isAvailable;
 
     //Вес товара
     @Column(name = "wight_kg")
-    private Double wightKg;
+    private Double weightKg;
 
     //Длинна упаковки
     @Column(name = "length_cm")
@@ -97,13 +96,46 @@ public class Product {
 
     @OneToMany(
             mappedBy = "product",
-            cascade = CascadeType.ALL
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
     private List<ProductAttributeValue> attributeValues = new ArrayList<>();
 
-    @Builder.Default
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JoinColumn(name = "product_id")
+    private List<CustomAttribute> customAttributes = new ArrayList<>();
+
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.sku == null) {
+            this.sku = SkuGenerator.generateSku(primaryCategory.getSlug(), brand.getSlug());
+        }
+        if (publicId == null) {
+            this.publicId = UUID.randomUUID();
+        }
+        if (isActive == null) {
+            this.isActive = false;
+        }
+        if (isAvailable == null) {
+            this.isAvailable = false;
+        }
+    }
+
+    public void addCategory(Category value) {
+        if (value == null) return;
+        boolean exists = categories.stream()
+                .anyMatch(pav -> pav.getPublicId().equals(value.getPublicId()));
+        if (!exists) {
+            categories.add(value);
+        }
+    }
 
     public void addAttributeValue(AttributeValue value) {
         if (value == null) return;
@@ -113,6 +145,20 @@ public class Product {
             ProductAttributeValue link = new ProductAttributeValue(this, value);
             attributeValues.add(link);
         }
+    }
+
+    public void addCustomAttributes(CustomAttribute value) {
+        if (value == null) return;
+        boolean exists = customAttributes.stream()
+                .anyMatch(pav -> pav.getName().equalsIgnoreCase(value.getName()));
+        if (!exists) {
+            customAttributes.add(value);
+        }
+    }
+
+    public void removeCustomAttribute(CustomAttribute value) {
+        if (value == null) return;
+        customAttributes.removeIf(pav -> pav.getId().equals(value.getId()));
     }
 
     public void removeAttributeValue(AttributeValue value) {
@@ -126,6 +172,7 @@ public class Product {
             return match;
         });
     }
+
 }
 
 

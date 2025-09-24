@@ -19,7 +19,7 @@ public class AttributeValue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "attribute_id",
             nullable = false
@@ -27,19 +27,25 @@ public class AttributeValue {
     private Attribute attribute;
 
     @EqualsAndHashCode.Include
-    @Builder.Default
     @Column(name = "public_id", unique = true, nullable = false, updatable = false)
-    public UUID publicId = UUID.randomUUID();
+    public UUID publicId;
 
 //    Человеко-читаемое значение ("Red")
     @Column(name = "value", nullable = false)
     private String value;
 
 //    Машинное представление значения для URL и фильтров ("red")
-    @Column(name = "slug", nullable = false)
+    @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
     @Builder.Default
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.publicId == null) {
+            this.publicId = UUID.randomUUID();
+        }
+    }
 }

@@ -3,6 +3,8 @@ package com.example.productcatalogservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -16,6 +18,9 @@ public class ProductAttributeValue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "public_id", nullable = false, unique = true, updatable = false)
+    private UUID publicId;
+
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -27,5 +32,12 @@ public class ProductAttributeValue {
     public ProductAttributeValue(Product product, AttributeValue attributeValue) {
         this.product = product;
         this.attributeValue = attributeValue;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.publicId == null) {
+            this.publicId = UUID.randomUUID();
+        }
     }
 }

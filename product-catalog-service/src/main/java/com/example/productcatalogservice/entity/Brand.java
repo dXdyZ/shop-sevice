@@ -2,6 +2,7 @@ package com.example.productcatalogservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -33,9 +34,8 @@ public class Brand {
     private String description;
 
     @EqualsAndHashCode.Include
-    @Builder.Default
     @Column(name = "public_id", unique = true, nullable = false, updatable = false)
-    private UUID publicId = UUID.randomUUID();
+    private UUID publicId;
 
     @OneToMany
     @JoinColumn(name = "products_id")
@@ -46,7 +46,15 @@ public class Brand {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Builder.Default
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
+
+
+    @PrePersist
+    public void prePersist() {
+        if (this.publicId == null) {
+            this.publicId = UUID.randomUUID();
+        }
+    }
 }

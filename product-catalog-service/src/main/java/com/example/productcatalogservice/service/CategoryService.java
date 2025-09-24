@@ -1,16 +1,18 @@
 package com.example.productcatalogservice.service;
 
-import com.example.productcatalogservice.dto.CreateCategoryDto;
+import com.example.productcatalogservice.dto.create.CreateCategoryDto;
 import com.example.productcatalogservice.dto.PatentRef;
 import com.example.productcatalogservice.entity.Category;
+import com.example.productcatalogservice.exception.CategoryDuplicateException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
 import com.example.productcatalogservice.repositoty.CategoryRepository;
 import com.example.productcatalogservice.util.CategoryMapper;
-import com.example.productcatalogservice.util.SlugMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,12 +36,15 @@ public class CategoryService {
                         () -> new CategoryNotFoundException("Parent category not found"));
             }
         }
-        Category category = CategoryMapper.fromDto(createDto);
-        category.setSlug(SlugMapper.fromName(createDto.name()));
+        Category category = CategoryMapper.fromCreateDto(createDto);
         if (parentCategory != null) {
             category.setParent(parentCategory);
         }
-        return categoryRepository.save(category);
+        try {
+            return categoryRepository.save(category);
+        } catch (DataIntegrityViolationException exception) {
+            throw new CategoryDuplicateException("Category by name: %s already exist".formatted(createDto.name()));
+        }
     }
 
     public Category getCategoryById(Long id) {
@@ -55,6 +60,10 @@ public class CategoryService {
     public Category getCategoryBySlug(String slug) {
         return categoryRepository.findBySlug(slug).orElseThrow(
                 () -> new CategoryNotFoundException("Category not found"));
+    }
+
+    public List<Category> getCategoriesByPublicIds(List<UUID> publicIds) {
+        return categoryRepository.findByPublicIdIn(publicIds);
     }
 }
 

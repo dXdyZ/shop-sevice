@@ -2,6 +2,7 @@ package com.example.productcatalogservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -20,15 +21,14 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @EqualsAndHashCode.Include
-    @Builder.Default
     @Column(name = "public_id", nullable = false, updatable = false, unique = true)
-    private UUID publicId = UUID.randomUUID();
+    private UUID publicId;
 
-//    Уникальная часть URL для категории (например, "smartfony")
+//    Уникальная часть URL для категории (например, "smartphone")
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
@@ -44,8 +44,15 @@ public class Category {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
 
-    @Builder.Default
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.publicId == null) {
+            this.publicId = UUID.randomUUID();
+        }
+    }
 
 }

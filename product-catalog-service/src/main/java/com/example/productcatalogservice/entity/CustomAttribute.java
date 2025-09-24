@@ -7,36 +7,27 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-
 @Getter
 @Setter
-@Entity
 @Builder
-@Table(name = "inventory")
+@Entity
+@Table(name = "custom_attributes")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Inventory {
-
+public class CustomAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @EqualsAndHashCode.Include
-    @Column(name = "public_id", nullable = false, unique = true, updatable = false)
+    @Column(name = "public_id", unique = true, nullable = false)
     private UUID publicId;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Builder.Default
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity = 0;
-
-    @Builder.Default
-    @Column(name = "low_stock_threshold")
-    private Integer lowStockThreshold = 5;
+    @Column(name = "value", nullable = false)
+    private String value;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

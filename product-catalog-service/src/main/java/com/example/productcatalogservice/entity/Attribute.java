@@ -1,9 +1,14 @@
 package com.example.productcatalogservice.entity;
 
+import com.example.productcatalogservice.exception.DuplicateAttributeValueException;
+import com.example.productcatalogservice.util.SlugMapper;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -27,10 +32,16 @@ public class Attribute {
     @Column(name = "slug", nullable = false, unique = true)
     private String slug;
 
+    @OneToMany(
+            mappedBy = "attribute",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<AttributeValue> values = new ArrayList<>();
+
     @EqualsAndHashCode.Include
-    @Builder.Default
     @Column(name = "public_id", unique = true, nullable = false, updatable = false)
-    public UUID publicId = UUID.randomUUID();
+    public UUID publicId;
 
 //    Можно ли использовать этот атрибут для фильтрации товара в каталоге
     @Builder.Default
@@ -42,7 +53,36 @@ public class Attribute {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Builder.Default
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
+
+    public AttributeValue addValue(String valueHuman) {
+        String slug = SlugMapper.from(valueHuman);
+        boolean exists = values.stream().anyMatch(v -> v.getSlug().equals(slug));
+        if (exists) {
+            throw new DuplicateAttributeValueException("Value slug '%s' already exists for attribute '%s'".formatted(slug, name));
+        }
+
+        AttributeValue attributeValue = AttributeValue.builder()
+                .attribute(this)
+                .value(valueHuman)
+                .slug(slug)
+                .build();
+        values.add(attributeValue);
+
+        return attributeValue;
+    }
+
+    public void deactivate() {
+        this.isActive = false;
+        values.forEach(val -> val.setIsActive(false));
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (this.publicId == null) {
+            this.publicId = UUID.randomUUID();
+        }
+    }
 }
