@@ -1,6 +1,6 @@
 package com.example.productcatalogservice.entity;
 
-import com.example.productcatalogservice.exception.DuplicateAttributeValueException;
+import com.example.productcatalogservice.exception.AttributeValueDuplicateException;
 import com.example.productcatalogservice.util.SlugMapper;
 import jakarta.persistence.*;
 import lombok.*;
@@ -37,6 +37,7 @@ public class Attribute {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @Builder.Default
     private List<AttributeValue> values = new ArrayList<>();
 
     @EqualsAndHashCode.Include
@@ -61,7 +62,7 @@ public class Attribute {
         String slug = SlugMapper.from(valueHuman);
         boolean exists = values.stream().anyMatch(v -> v.getSlug().equals(slug));
         if (exists) {
-            throw new DuplicateAttributeValueException("Value slug '%s' already exists for attribute '%s'".formatted(slug, name));
+            throw new AttributeValueDuplicateException("Value slug '%s' already exists for attribute '%s'".formatted(slug, name));
         }
 
         AttributeValue attributeValue = AttributeValue.builder()

@@ -48,6 +48,7 @@ public class Product {
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
+    @Builder.Default
     private Set<Category> categories = new LinkedHashSet<>();
 
     //Короткое описание товара
@@ -99,6 +100,7 @@ public class Product {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @Builder.Default
     private List<ProductAttributeValue> attributeValues = new ArrayList<>();
 
     @OneToMany(
@@ -106,6 +108,7 @@ public class Product {
             orphanRemoval = true
     )
     @JoinColumn(name = "product_id")
+    @Builder.Default
     private List<CustomAttribute> customAttributes = new ArrayList<>();
 
     @CreationTimestamp

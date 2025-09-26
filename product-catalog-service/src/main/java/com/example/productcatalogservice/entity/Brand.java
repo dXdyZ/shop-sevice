@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -38,8 +39,9 @@ public class Brand {
     private UUID publicId;
 
     @OneToMany
+    @Builder.Default
     @JoinColumn(name = "products_id")
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
 //    Флаг, указывающий активен ли бренд. Неактивные бренды скрыты из каталога
     @Builder.Default

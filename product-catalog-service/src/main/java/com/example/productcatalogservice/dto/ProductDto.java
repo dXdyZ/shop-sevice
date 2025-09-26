@@ -14,6 +14,6 @@ public record ProductDto(
         Double weightKg,
         Double lengthCm,
         Double widthCm,
-        Double heightCm,
-
+        Double heightCm
+//        TODO дописать дто
 ) {}

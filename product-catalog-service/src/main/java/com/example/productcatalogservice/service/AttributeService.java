@@ -4,7 +4,8 @@ import com.example.productcatalogservice.dto.AddAttributeValueDto;
 import com.example.productcatalogservice.dto.create.CreateAttributeDto;
 import com.example.productcatalogservice.entity.Attribute;
 import com.example.productcatalogservice.exception.AttributeNotFoundException;
-import com.example.productcatalogservice.exception.DuplicateAttributeException;
+import com.example.productcatalogservice.exception.AttributeDuplicateException;
+import com.example.productcatalogservice.exception.AttributeValueDuplicateException;
 import com.example.productcatalogservice.repositoty.AttributeRepository;
 import com.example.productcatalogservice.util.AttributeMapper;
 import lombok.RequiredArgsConstructor;
@@ -31,12 +32,12 @@ public class AttributeService {
                 return attributeRepository.save(attribute);
             }
         } catch (DataIntegrityViolationException exception) {
-            throw new DuplicateAttributeException("Attribute by name: %s already exist".formatted(createDto.name()));
+            throw new AttributeDuplicateException("Attribute by name: %s already exist".formatted(createDto.name()));
         }
     }
 
     @Transactional
-    public Attribute addValue(AddAttributeValueDto addDto) {
+    public Attribute addValue(AddAttributeValueDto addDto) throws AttributeValueDuplicateException {
         Attribute attribute = attributeRepository.findByPublicId(addDto.publicId())
                 .orElseThrow(() -> new AttributeNotFoundException("Attribute not found"));
 
