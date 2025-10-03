@@ -2,10 +2,8 @@ package com.example.productcatalogservice.dto.create;
 
 import java.util.UUID;
 
-public record CreateCategoryDto(
-        String name,
+public record CreateFeedback(
         String description,
-        UUID parentPublicId
+        Integer estimation,
+        UUID productPublicId,
 ) {}
-
-

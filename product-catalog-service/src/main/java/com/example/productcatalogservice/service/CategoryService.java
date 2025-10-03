@@ -1,12 +1,11 @@
 package com.example.productcatalogservice.service;
 
 import com.example.productcatalogservice.dto.create.CreateCategoryDto;
-import com.example.productcatalogservice.dto.PatentRef;
 import com.example.productcatalogservice.entity.Category;
 import com.example.productcatalogservice.exception.CategoryDuplicateException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
 import com.example.productcatalogservice.repositoty.CategoryRepository;
-import com.example.productcatalogservice.util.CategoryMapper;
+import com.example.productcatalogservice.util.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -23,23 +22,14 @@ public class CategoryService {
     @Transactional
     public Category createCategory(CreateCategoryDto createDto) {
         Category parentCategory = null;
-        if (createDto.patentRef() != null) {
-            PatentRef ref = createDto.patentRef();
-            if (ref.publicId() != null) {
-                parentCategory = categoryRepository.findByPublicId(ref.publicId()).orElseThrow(
-                        () -> new CategoryNotFoundException("Parent category not found"));
-            } else if (ref.id() != null) {
-                parentCategory = categoryRepository.findById(ref.id()).orElseThrow(
-                        () -> new CategoryNotFoundException("Parent category not found"));
-            } else if (ref.slug() != null) {
-                parentCategory = categoryRepository.findBySlug(ref.slug()).orElseThrow(
-                        () -> new CategoryNotFoundException("Parent category not found"));
-            }
+        if (createDto.parentPublicId() != null) {
+            parentCategory = categoryRepository.findByPublicId(createDto.parentPublicId()).orElseThrow(
+                    () -> new CategoryNotFoundException("Parent category not found"));
         }
+
         Category category = CategoryMapper.fromCreateDto(createDto);
-        if (parentCategory != null) {
-            category.setParent(parentCategory);
-        }
+        category.setParent(parentCategory);
+
         try {
             return categoryRepository.save(category);
         } catch (DataIntegrityViolationException exception) {

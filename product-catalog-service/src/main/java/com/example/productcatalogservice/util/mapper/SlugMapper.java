@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.util;
+package com.example.productcatalogservice.util.mapper;
 
 public final class SlugMapper {
     public static String from(String world) {

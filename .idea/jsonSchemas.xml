@@ -12,13 +12,49 @@
               <option name="patterns">
                 <list>
                   <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/db.changelog-master.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V10__Feedback.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V1__Attributes.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V1__Create_Category.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V2__Attribute_Value.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V3__Brands.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V4__Categories.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V5__Products.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V6__Product_Category.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V7__Custom_Attributes.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V8__Product_Attribute_Values.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/main/resources/db/migration/V9__Inventory.yaml" />
+                  </Item>
+                  <Item>
+                    <option name="path" value="product-catalog-service/src/test/java/com/example/productcatalogservice/db/db.changelog-master.yaml" />
+                  </Item>
+                  <Item>
                     <option name="path" value="user-service/src/main/resources/db/db.changelog-master.yaml" />
                   </Item>
                   <Item>
                     <option name="path" value="user-service/src/main/resources/db/migration/V1__Create_user_table.yaml" />
-                  </Item>
-                  <Item>
-                    <option name="path" value="product-catalog-service/src/test/java/com/example/productcatalogservice/db/db.changelog-master.yaml" />
                   </Item>
                 </list>
               </option>

@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.util;
+package com.example.productcatalogservice.util.mapper;
 
 import com.example.productcatalogservice.dto.create.CreateCategoryDto;
 import com.example.productcatalogservice.entity.Category;

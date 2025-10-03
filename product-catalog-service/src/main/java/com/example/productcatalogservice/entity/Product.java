@@ -95,6 +95,9 @@ public class Product {
     @Column(name = "rating_count")
     private Integer ratingCount = 0;
 
+    @Column(name = "rating")
+    private Double rating;
+
     @OneToMany(
             mappedBy = "product",
             cascade = CascadeType.ALL,
@@ -110,6 +113,14 @@ public class Product {
     @JoinColumn(name = "product_id")
     @Builder.Default
     private List<CustomAttribute> customAttributes = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Builder.Default
+    private List<Feedback> feedbacks = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -175,7 +186,6 @@ public class Product {
             return match;
         });
     }
-
 }
 
 

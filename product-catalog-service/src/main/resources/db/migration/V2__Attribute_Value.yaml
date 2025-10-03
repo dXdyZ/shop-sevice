@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-attribute-values
+      author: dXdyZ
+      changes:
+        - createTable:
+            tableName: attribute_values
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_attribute_values
+                    nullable: false
+              - column:
+                  name: attribute_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: public_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_attribute_values_public_id
+              - column:
+                  name: value
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: slug
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_attribute_values_slug
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+        - addForeignKeyConstraint:
+            baseTableName: attribute_values
+            baseColumnNames: attribute_id
+            referencedTableName: attributes
+            referencedColumnNames: id
+            constraintName: fk_attribute_values_attribute
+            onDelete: CASCADE
+        - createIndex:
+            indexName: idx_attribute_values_attribute_id
+            tableName: attribute_values
+            columns:
+              - column:
+                  name: attribute_id
+        - createIndex:
+            indexName: idx_attribute_values_slug
+            tableName: attribute_values
+            unique: true
+            columns:
+              - column:
+                  name: slug
+        - createIndex:
+            indexName: idx_attribute_values_public_id
+            tableName: attribute_values
+            unique: true
+            columns:
+              - column:
+                  name: public_id

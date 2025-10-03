@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - include:
+      file: db/migration/V1__Attributes.yaml
+  - include:
+      file: db/migration/V2__Attribute_Value.yaml
+  - include:
+      file: db/migration/V3__Brands.yaml
+  - include:
+      file: db/migration/V4__Categories.yaml
+  - include:
+      file: db/migration/V5__Products.yaml
+  - include:
+      file: db/migration/V6__Product_Category.yaml
+  - include:
+      file: db/migration/V7__Custom_Attributes.yaml
+  - include:
+      file: db/migration/V8__Product_Attribute_Values.yaml
+  - include:
+      file: db/migration/V9__Inventory.yaml

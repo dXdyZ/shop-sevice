@@ -1,7 +1,7 @@
 package com.example.productcatalogservice.entity;
 
 import com.example.productcatalogservice.exception.AttributeValueDuplicateException;
-import com.example.productcatalogservice.util.SlugMapper;
+import com.example.productcatalogservice.util.mapper.SlugMapper;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

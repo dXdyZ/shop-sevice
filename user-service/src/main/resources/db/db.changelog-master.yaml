@@ -1,3 +1,17 @@
 databaseChangeLog:
   - include:
       file: db/migration/V1__Create_user_table.yaml
+  - include:
+      file: com/example/productcatalogservice/entity/01-01-changelog.yaml
+  - include:
+      file: db/migration/V2__Create_Attribute_Value.yaml
+  - include:
+      file: db/migration/V3__Create_Category.yaml
+  - include:
+      file: com/example/productcatalogservice/entity/V4__Create_Custom_Attribute.yaml
+  - include:
+      file: db/migration/V5__Create_Brand.yaml
+  - include:
+      file: db/migration/V6__Create_Product.yaml
+  - include:
+      file: db/migration/V7__Create_Product_Attribute.yaml

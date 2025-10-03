@@ -1,0 +1,22 @@
+package com.example.productcatalogservice.util;
+
+import lombok.Getter;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
+
+@Getter
+public enum LogMarker {
+
+    AUDIT,
+    APP_CALL,
+    ERROR,
+    INFRA_ERROR,
+    NOTIFY;
+
+    private final Marker marker;
+
+    LogMarker() {
+        this.marker = MarkerFactory.getMarker(this.name());
+    }
+}
+

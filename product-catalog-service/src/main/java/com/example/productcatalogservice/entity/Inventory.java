@@ -27,7 +27,7 @@ public class Inventory {
     private UUID publicId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", unique = true)
     private Product product;
 
     @Builder.Default

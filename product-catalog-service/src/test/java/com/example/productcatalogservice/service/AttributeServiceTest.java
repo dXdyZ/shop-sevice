@@ -182,7 +182,39 @@ class AttributeServiceTest {
     }
 
     @Test
-    void getAttributeByName_ShouldReturnAttributeNotFoundException_WhenAttributeDoesNotExist
+    void getAttributeByName_ShouldReturnAttributeNotFoundException_WhenAttributeDoesNotExist() {
+        var name = "color";
+
+        when(attributeRepository.findByName(name)).thenReturn(Optional.empty());
+
+        assertThrows(AttributeNotFoundException.class,
+                () -> attributeService.getAttributeByName(name));
+    }
+
+    @Test
+    void getAttributeBySlug_ShouldReturnAttributeBySlug_WhenAttributeExist() {
+        var slug = "color";
+        var attributee = Attribute.builder()
+                .id(1L)
+                .slug(slug)
+                .build();
+
+        when(attributeRepository.findBySlug(anyString())).thenReturn(Optional.of(attributee));
+
+        Attribute result = attributeService.getAttributeBySlug(slug);
+
+        assertEquals(attributee, result);
+    }
+
+    @Test
+    void getAttributeBySlug_ShouldReturnAttributeNotFoundException_WhenAttributeDoesNotExist() {
+        var slug = "color";
+
+        when(attributeRepository.findBySlug(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(AttributeNotFoundException.class,
+                () -> attributeService.getAttributeBySlug(slug));
+    }
 }
 
 

@@ -1,0 +1,126 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-create-products
+      author: dXdyZ
+      changes:
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_products
+                    nullable: false
+              - column:
+                  name: stock_keeping_unit
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_products_sku
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: brand_id
+                  type: BIGINT
+              - column:
+                  name: public_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uq_products_public_id
+              - column:
+                  name: primary_category_id
+                  type: BIGINT
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: long_description
+                  type: TEXT
+              - column:
+                  name: base_price
+                  type: NUMERIC(19,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: CHAR(3)
+                  defaultValue: RUB
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_active
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_available
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: wight_kg
+                  type: DOUBLE PRECISION
+              - column:
+                  name: length_cm
+                  type: DOUBLE PRECISION
+              - column:
+                  name: width_cm
+                  type: DOUBLE PRECISION
+              - column:
+                  name: height_cm
+                  type: DOUBLE PRECISION
+              - column:
+                  name: rating_count
+                  type: INT
+                  defaultValueNumeric: 0
+              - column:
+                  name: rating
+                  type: DOUBLE PRECISION
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  defaultValueComputed: CURRENT_TIMESTAMP
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: brand_id
+            referencedTableName: brands
+            referencedColumnNames: id
+            constraintName: fk_products_brand
+            onDelete: SET NULL
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: primary_category_id
+            referencedTableName: categories
+            referencedColumnNames: id
+            constraintName: fk_products_primary_category
+            onDelete: SET NULL
+        - createIndex:
+            indexName: idx_products_brand_id
+            tableName: products
+            columns:
+              - column:
+                  name: brand_id
+        - createIndex:
+            indexName: idx_products_primary_category_id
+            tableName: products
+            columns:
+              - column:
+                  name: primary_category_id
+        - createIndex:
+            indexName: idx_products_public_id
+            tableName: products
+            unique: true
+            columns:
+              - column:
+                  name: public_id

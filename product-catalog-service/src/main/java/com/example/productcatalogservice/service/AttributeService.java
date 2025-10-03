@@ -7,7 +7,7 @@ import com.example.productcatalogservice.exception.AttributeNotFoundException;
 import com.example.productcatalogservice.exception.AttributeDuplicateException;
 import com.example.productcatalogservice.exception.AttributeValueDuplicateException;
 import com.example.productcatalogservice.repositoty.AttributeRepository;
-import com.example.productcatalogservice.util.AttributeMapper;
+import com.example.productcatalogservice.util.mapper.AttributeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
