@@ -7,7 +7,7 @@ public class UserDtoFactory {
     public static UserDto createUserDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
-                .userUUID(user.getUserUUID())
+                .userUUID(user.getPublicId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .patronymic(user.getPatronymic())

@@ -18,7 +18,7 @@ public class UserCacheService {
     public void evictUserCaches(User user) {
         evictUserCaches(
                 user.getId(),
-                user.getUserUUID(),
+                user.getPublicId(),
                 user.getEmail(),
                 user.getPhoneNumber()
         );

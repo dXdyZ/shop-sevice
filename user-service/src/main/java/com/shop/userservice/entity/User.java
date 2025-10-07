@@ -2,7 +2,9 @@ package com.shop.userservice.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -17,13 +19,15 @@ import java.util.UUID;
 })
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @EqualsAndHashCode.Include
     @Column(name = "user_uuid", nullable = false, updatable = false)
-    private UUID userUUID;
+    private UUID publicId;
 
     @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
@@ -40,7 +44,7 @@ public class User {
     @Column(name = "email", nullable = false, length = 100)
     private String email;
 
-    @Builder.Default
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    private OffsetDateTime createdAt;
 }

@@ -36,6 +36,11 @@ databaseChangeLog:
               - column:
                   name: product_id
                   type: BIGINT
+              - column:
+                  name: feedback_status
+                  type: varchar
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: feedbacks
             baseColumnNames: product_id

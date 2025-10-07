@@ -8,6 +8,7 @@ import com.example.productcatalogservice.repositoty.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 public class InventoryService {
     private final InventoryRepository inventoryRepository;
 
+    @Transactional
     public Inventory createInventory(Product product, Integer quantity, Integer lowStockThreshold) {
         Inventory inventory = Inventory.builder()
                 .product(product)

@@ -138,7 +138,7 @@ public class UserControllerIntegrationTest extends BasePostgresIntegrationTest {
 
         Optional<User> newUser = userRepository.findByEmail(email);
         assertThat(newUser).isPresent();
-        assertThat(newUser.get().getUserUUID()).isNotNull().isInstanceOf(UUID.class);
+        assertThat(newUser.get().getPublicId()).isNotNull().isInstanceOf(UUID.class);
 
         verify(keycloakService, times(1))
                 .createUser(eq("testUser"), eq("Test"), eq("User"), eq(email), eq("password"));

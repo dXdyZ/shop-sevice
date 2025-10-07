@@ -9,6 +9,7 @@ import com.example.productcatalogservice.util.mapper.BrandMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class BrandService {
     private final BrandRepository brandRepository;
 
+    @Transactional
     public Brand createBrand(CreateBrandDto createDto) {
         try {
             return brandRepository.save(BrandMapper.fromCreateDto(createDto));

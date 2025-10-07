@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.elastic.document;
+package com.example.productcatalogservice.entity.elastic;
 
 import com.example.productcatalogservice.entity.Brand;
 import com.example.productcatalogservice.entity.Category;
@@ -47,8 +47,7 @@ public class ProductEsDocument {
 
     private Long basePrice;
     private String currency;
-
-    private
+//    private
 }
 
 

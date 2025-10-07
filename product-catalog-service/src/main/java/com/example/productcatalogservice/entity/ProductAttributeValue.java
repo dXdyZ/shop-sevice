@@ -3,6 +3,7 @@ package com.example.productcatalogservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 @Getter
@@ -12,7 +13,7 @@ import java.util.UUID;
 @Table(name = "product_attribute_values")
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductAttributeValue {
+public class ProductAttributeValue implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

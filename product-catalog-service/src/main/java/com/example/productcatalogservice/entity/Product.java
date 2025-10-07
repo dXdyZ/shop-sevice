@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -17,7 +18,7 @@ import java.util.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,7 +94,7 @@ public class Product {
 
     @Builder.Default
     @Column(name = "rating_count")
-    private Integer ratingCount = 0;
+    private Long ratingCount = 0L;
 
     @Column(name = "rating")
     private Double rating;
@@ -185,6 +186,10 @@ public class Product {
             }
             return match;
         });
+    }
+
+    public void incRatingCount() {
+        this.ratingCount++;
     }
 }
 

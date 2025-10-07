@@ -58,6 +58,8 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+
+
     public Product getProductById(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product by id: %s not fount".formatted(id)));
@@ -71,6 +73,12 @@ public class ProductService {
     public Product getProductBuSku(String sku) {
         return productRepository.findBySku(sku)
                 .orElseThrow(() -> new ProductNotFoundException("Product by sku: %s not fount".formatted(sku)));
+    }
+
+    public void updateRating(double newRating, Product product) {
+        product.setRating(newRating);
+        product.incRatingCount();
+        productRepository.save(product);
     }
 }
 

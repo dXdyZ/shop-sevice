@@ -111,7 +111,7 @@ public class UserService {
 
         eventPublisher.publishEvent(new UserDeleteEvent(
                 user.getId(),
-                user.getUserUUID(),
+                user.getPublicId(),
                 user.getEmail(),
                 user.getPhoneNumber(),
                 adminName

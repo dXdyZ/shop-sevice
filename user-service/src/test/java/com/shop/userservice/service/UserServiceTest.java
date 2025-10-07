@@ -61,7 +61,7 @@ class UserServiceTest {
 
         verify(keycloakService).createUser(any(), any(), any(), any(), any());
         verify(userRepository).save(argThat(actUser ->
-                actUser.getUserUUID().toString().equals(userUUID)));
+                actUser.getPublicId().toString().equals(userUUID)));
 
         verify(keycloakService, never()).deleteUserByUUID(userUUID);
     }
