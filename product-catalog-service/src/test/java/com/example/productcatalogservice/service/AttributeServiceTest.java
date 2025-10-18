@@ -7,7 +7,7 @@ import com.example.productcatalogservice.entity.AttributeValue;
 import com.example.productcatalogservice.exception.AttributeDuplicateException;
 import com.example.productcatalogservice.exception.AttributeNotFoundException;
 import com.example.productcatalogservice.exception.AttributeValueDuplicateException;
-import com.example.productcatalogservice.repositoty.AttributeRepository;
+import com.example.productcatalogservice.repositoty.jpa.AttributeRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

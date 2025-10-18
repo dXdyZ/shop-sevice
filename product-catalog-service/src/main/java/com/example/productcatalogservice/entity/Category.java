@@ -22,12 +22,16 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Builder.Default
     @EqualsAndHashCode.Include
     @Column(name = "public_id", nullable = false, updatable = false, unique = true)
-    private UUID publicId;
+    private UUID publicId = UUID.randomUUID();
 
 //    Уникальная часть URL для категории (например, "smartphone")
     @Column(name = "slug", nullable = false, unique = true)
@@ -48,12 +52,4 @@ public class Category implements Serializable {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
-    }
-
 }

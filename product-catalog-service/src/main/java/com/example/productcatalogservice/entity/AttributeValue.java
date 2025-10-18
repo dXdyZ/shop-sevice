@@ -20,6 +20,9 @@ public class AttributeValue implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "attribute_id",
@@ -27,9 +30,10 @@ public class AttributeValue implements Serializable {
     )
     private Attribute attribute;
 
+    @Builder.Default
     @EqualsAndHashCode.Include
     @Column(name = "public_id", unique = true, nullable = false, updatable = false)
-    public UUID publicId;
+    public UUID publicId = UUID.randomUUID();
 
 //    Человеко-читаемое значение ("Red")
     @Column(name = "value", nullable = false)
@@ -42,11 +46,4 @@ public class AttributeValue implements Serializable {
     @Builder.Default
     @Column(name = "is_active")
     private Boolean isActive = true;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
-    }
 }

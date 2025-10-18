@@ -8,7 +8,7 @@ import com.example.productcatalogservice.entity.Product;
 import com.example.productcatalogservice.exception.BrandNotFoundException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
 import com.example.productcatalogservice.exception.ProductNotFoundException;
-import com.example.productcatalogservice.repositoty.ProductRepository;
+import com.example.productcatalogservice.repositoty.jpa.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

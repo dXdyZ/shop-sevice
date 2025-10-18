@@ -4,12 +4,11 @@ import com.example.productcatalogservice.dto.create.CreateBrandDto;
 import com.example.productcatalogservice.entity.Brand;
 import com.example.productcatalogservice.exception.BrandDuplicateException;
 import com.example.productcatalogservice.exception.BrandNotFoundException;
-import com.example.productcatalogservice.repositoty.BrandRepository;
+import com.example.productcatalogservice.repositoty.jpa.BrandRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 

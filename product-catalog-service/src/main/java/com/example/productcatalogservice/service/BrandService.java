@@ -4,7 +4,7 @@ import com.example.productcatalogservice.dto.create.CreateBrandDto;
 import com.example.productcatalogservice.entity.Brand;
 import com.example.productcatalogservice.exception.BrandDuplicateException;
 import com.example.productcatalogservice.exception.BrandNotFoundException;
-import com.example.productcatalogservice.repositoty.BrandRepository;
+import com.example.productcatalogservice.repositoty.jpa.BrandRepository;
 import com.example.productcatalogservice.util.mapper.BrandMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;

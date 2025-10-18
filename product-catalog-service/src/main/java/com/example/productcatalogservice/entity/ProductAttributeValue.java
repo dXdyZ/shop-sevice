@@ -19,6 +19,9 @@ public class ProductAttributeValue implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
     private UUID publicId;
 

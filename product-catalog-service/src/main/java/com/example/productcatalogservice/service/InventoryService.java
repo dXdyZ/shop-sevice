@@ -4,7 +4,7 @@ import com.example.productcatalogservice.entity.Inventory;
 import com.example.productcatalogservice.entity.Product;
 import com.example.productcatalogservice.exception.InventoryDuplicateException;
 import com.example.productcatalogservice.exception.InventoryNotFoundException;
-import com.example.productcatalogservice.repositoty.InventoryRepository;
+import com.example.productcatalogservice.repositoty.jpa.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;

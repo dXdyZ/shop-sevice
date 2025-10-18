@@ -6,7 +6,7 @@ import com.example.productcatalogservice.entity.Product;
 import com.example.productcatalogservice.exception.FeedbackDuplicateException;
 import com.example.productcatalogservice.exception.FeedbackNotFoundException;
 import com.example.productcatalogservice.exception.ProductNotFoundException;
-import com.example.productcatalogservice.repositoty.FeedbackRepository;
+import com.example.productcatalogservice.repositoty.jpa.FeedbackRepository;
 import com.example.productcatalogservice.util.RatingCalculation;
 import com.example.productcatalogservice.util.mapper.FeedbackMapper;
 import lombok.RequiredArgsConstructor;

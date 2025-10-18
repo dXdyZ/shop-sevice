@@ -26,6 +26,9 @@ public class Attribute implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -41,9 +44,10 @@ public class Attribute implements Serializable {
     @Builder.Default
     private List<AttributeValue> values = new ArrayList<>();
 
+    @Builder.Default
     @EqualsAndHashCode.Include
     @Column(name = "public_id", unique = true, nullable = false, updatable = false)
-    public UUID publicId;
+    public UUID publicId = UUID.randomUUID();
 
 //    Можно ли использовать этот атрибут для фильтрации товара в каталоге
     @Builder.Default
@@ -79,12 +83,5 @@ public class Attribute implements Serializable {
     public void deactivate() {
         this.isActive = false;
         values.forEach(val -> val.setIsActive(false));
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
     }
 }

@@ -15,6 +15,11 @@ databaseChangeLog:
                     primaryKeyName: pk_inventory
                     nullable: false
               - column:
+                  name: version
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
                   name: public_id
                   type: UUID
                   constraints:

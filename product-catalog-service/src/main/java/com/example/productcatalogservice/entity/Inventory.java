@@ -23,11 +23,15 @@ public class Inventory implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
+    @Builder.Default
     @EqualsAndHashCode.Include
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
-    private UUID publicId;
+    private UUID publicId = UUID.randomUUID();
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", unique = true)
     private Product product;
 
@@ -42,11 +46,4 @@ public class Inventory implements Serializable {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
-    }
 }

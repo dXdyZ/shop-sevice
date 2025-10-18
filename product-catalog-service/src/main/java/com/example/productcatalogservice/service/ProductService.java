@@ -5,7 +5,8 @@ import com.example.productcatalogservice.entity.*;
 import com.example.productcatalogservice.exception.BrandNotFoundException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
 import com.example.productcatalogservice.exception.ProductNotFoundException;
-import com.example.productcatalogservice.repositoty.ProductRepository;
+import com.example.productcatalogservice.repositoty.jpa.ProductRepository;
+import com.example.productcatalogservice.util.SkuGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ public class ProductService {
         Product product = Product.builder()
                 .name(createDto.name())
                 .brand(brand)
+                .sku(SkuGenerator.generateSku(primaryCategory.getSlug(), brand.getSlug()))
                 .primaryCategory(primaryCategory)
                 .description(createDto.description())
                 .longDescription(createDto.longDescription())
@@ -57,8 +59,6 @@ public class ProductService {
 
         return productRepository.save(product);
     }
-
-
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)

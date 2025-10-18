@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.repositoty;
+package com.example.productcatalogservice.repositoty.jpa;
 
 import com.example.productcatalogservice.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

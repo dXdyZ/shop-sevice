@@ -24,6 +24,9 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     //Уникальный артикуль товара для склада
     @Column(name = "stock_keeping_unit", unique = true, nullable = false, length = 100)
     private String sku;
@@ -35,9 +38,10 @@ public class Product implements Serializable {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
+    @Builder.Default
     @EqualsAndHashCode.Include
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
-    private UUID publicId;
+    private UUID publicId = UUID.randomUUID();
 
     @ManyToOne
     @JoinColumn(name = "primary_category_id")
@@ -69,12 +73,13 @@ public class Product implements Serializable {
     private String currency = "RUB";
 
     //Флаг, разрешено ли показывать товар в каталоге. По умолчанию скрыт до проверки админом
+    @Builder.Default
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
+    private Boolean isActive = false;
 
     //Флаг, разрешено ли добавить товар в корзину и купить. По умолчанию нельзя до проверки админом
     @Column(name = "is_available", nullable = false)
-    private Boolean isAvailable;
+    private Boolean isAvailable = false;
 
     //Вес товара
     @Column(name = "wight_kg")
@@ -126,22 +131,6 @@ public class Product implements Serializable {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.sku == null) {
-            this.sku = SkuGenerator.generateSku(primaryCategory.getSlug(), brand.getSlug());
-        }
-        if (publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
-        if (isActive == null) {
-            this.isActive = false;
-        }
-        if (isAvailable == null) {
-            this.isAvailable = false;
-        }
-    }
 
     public void addCategory(Category value) {
         if (value == null) return;

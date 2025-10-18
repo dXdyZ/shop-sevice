@@ -4,7 +4,7 @@ import com.example.productcatalogservice.dto.create.CreateCategoryDto;
 import com.example.productcatalogservice.entity.Category;
 import com.example.productcatalogservice.exception.CategoryDuplicateException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
-import com.example.productcatalogservice.repositoty.CategoryRepository;
+import com.example.productcatalogservice.repositoty.jpa.CategoryRepository;
 import com.example.productcatalogservice.util.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;

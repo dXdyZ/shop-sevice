@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.repositoty;
+package com.example.productcatalogservice.repositoty.jpa;
 
 import com.example.productcatalogservice.entity.Inventory;
 import org.springframework.data.jpa.repository.EntityGraph;

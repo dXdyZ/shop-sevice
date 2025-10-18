@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.repositoty;
+package com.example.productcatalogservice.repositoty.jpa;
 
 import com.example.productcatalogservice.entity.ProductAttributeValue;
 import org.springframework.data.jpa.repository.JpaRepository;

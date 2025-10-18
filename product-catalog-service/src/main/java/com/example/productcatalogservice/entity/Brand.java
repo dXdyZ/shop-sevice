@@ -25,6 +25,9 @@ public class Brand implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -35,16 +38,16 @@ public class Brand implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @Builder.Default
     @EqualsAndHashCode.Include
     @Column(name = "public_id", unique = true, nullable = false, updatable = false)
-    private UUID publicId;
+    private UUID publicId = UUID.randomUUID();
 
-    @OneToMany
     @Builder.Default
-    @JoinColumn(name = "products_id")
+    @OneToMany(mappedBy = "brand")
     private List<Product> products = new ArrayList<>();
 
-//    Флаг, указывающий активен ли бренд. Неактивные бренды скрыты из каталога
+    //    Флаг, указывающий активен ли бренд. Неактивные бренды скрыты из каталога
     @Builder.Default
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -52,12 +55,4 @@ public class Brand implements Serializable {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
-
-
-    @PrePersist
-    public void prePersist() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
-    }
 }

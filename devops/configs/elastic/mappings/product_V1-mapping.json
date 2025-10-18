@@ -1,0 +1,218 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "char_filter": {
+          "html_strip_cf": { "type": "html_strip" }
+        },
+        "filter": {
+          "ru_stop": { "type": "stop", "stopwords": "_russian_" },
+          "en_stop": { "type": "stop", "stopwords": "_english_" },
+          "ru_stem": { "type": "stemmer", "language": "russian" },
+          "en_stem": { "type": "stemmer", "language": "english" },
+          "syn_ru_en": { "type": "synonym", "synonyms_path": "analysis/synonyms_ru_en.txt" },
+          "syn_ru_en_graph": { "type": "synonym_graph", "synonyms_path": "analysis/synonyms_ru_en.txt" },
+          "edge_ngram_2_20": { "type": "edge_ngram", "min_gram": 2, "max_gram": 20 }
+        },
+        "analyzer": {
+          "fulltext_ru_en_index": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": ["html_strip_cf"],
+            "filter": [
+              "lowercase",
+              "asciifolding",
+              "ru_stop",
+              "en_stop",
+              "ru_stem",
+              "en_stem",
+              "syn_ru_en"
+            ]
+          },
+          "fulltext_ru_en_search": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "char_filter": ["html_strip_cf"],
+            "filter": [
+              "lowercase",
+              "asciifolding",
+              "ru_stop",
+              "en_stop",
+              "ru_stem",
+              "en_stem",
+              "syn_ru_en_graph"
+            ]
+          },
+          "edge_name": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": ["lowercase", "asciifolding", "edge_ngram_2_20"]
+          }
+        },
+        "normalizer": {
+          "lowercase_normalizer": {
+            "type": "custom",
+            "filter": ["lowercase", "asciifolding"]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "id": { "type": "long" },
+      "public_id": { "type": "keyword" },
+      "sku": { "type": "keyword" },
+
+      "name": {
+        "type": "text",
+        "analyzer": "fulltext_ru_en_index",
+        "search_analyzer": "fulltext_ru_en_search",
+        "fields": {
+          "raw": { "type": "keyword" },
+          "kw": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+          "edge": { "type": "text", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" }
+        }
+      },
+
+      "description": {
+        "type": "text",
+        "analyzer": "fulltext_ru_en_index",
+        "search_analyzer": "fulltext_ru_en_search"
+      },
+
+      "long_description": {
+        "type": "text",
+        "analyzer": "fulltext_ru_en_index",
+        "search_analyzer": "fulltext_ru_en_search"
+      },
+
+      "brand": {
+        "properties": {
+          "id": { "type": "long" },
+          "public_id": { "type": "keyword" },
+          "name": {
+            "type": "text",
+            "analyzer": "fulltext_ru_en_index",
+            "search_analyzer": "fulltext_ru_en_search",
+            "fields": {
+              "raw": { "type": "keyword" },
+              "kw": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+              "edge": { "type": "text", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" }
+            }
+          },
+          "slug": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+
+      "primary_category": {
+        "properties": {
+          "id": { "type": "long" },
+          "public_id": { "type": "keyword" },
+          "name": {
+            "type": "text",
+            "analyzer": "fulltext_ru_en_index",
+            "search_analyzer": "fulltext_ru_en_search",
+            "fields": {
+              "raw": { "type": "keyword" },
+              "kw": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+              "edge": { "type": "text", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" }
+            }
+          },
+          "path_ids": { "type": "long" },
+          "path_slugs": { "type": "keyword" }
+        }
+      },
+
+      "categories": {
+        "type": "nested",
+        "properties": {
+          "id": { "type": "long" },
+          "public_id": { "type": "keyword" },
+          "name": {
+            "type": "text",
+            "analyzer": "fulltext_ru_en_index",
+            "search_analyzer": "fulltext_ru_en_search",
+            "fields": {
+              "raw": { "type": "keyword" },
+              "kw": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+            }
+          },
+          "slug": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+          "parent_id": { "type": "long" }
+        }
+      },
+
+      "attributes": {
+        "type": "nested",
+        "properties": {
+          "attribute_id": { "type": "long" },
+          "attribute_public_id": { "type": "keyword" },
+          "attribute_name": {
+            "type": "text",
+            "analyzer": "fulltext_ru_en_index",
+            "search_analyzer": "fulltext_ru_en_search",
+            "fields": {
+              "raw": { "type": "keyword" },
+              "kw": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+            }
+          },
+          "attribute_slug": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+          "value_id": { "type": "long" },
+          "value_public_id": { "type": "keyword" },
+          "value": {
+            "type": "text",
+            "analyzer": "fulltext_ru_en_index",
+            "search_analyzer": "fulltext_ru_en_search",
+            "fields": {
+              "raw": { "type": "keyword" }
+            }
+          },
+          "value_slug": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+          "filterable": { "type": "boolean" },
+          "is_active": { "type": "boolean" }
+        }
+      },
+
+      "custom_attributes": {
+        "type": "nested",
+        "properties": {
+          "name": { "type": "keyword", "normalizer": "lowercase_normalizer" },
+          "value": { "type": "keyword" }
+        }
+      },
+
+      "rating": {"type": "double"},
+
+      "base_price": { "type": "scaled_float", "scaling_factor": 100 },
+      "currency": { "type": "keyword" },
+
+      "rating_count": { "type": "long" },
+      "is_active": { "type": "boolean" },
+      "is_available": { "type": "boolean" },
+
+      "inventory": {
+        "properties": {
+          "quantity": { "type": "integer" },
+          "in_stock": { "type": "boolean" },
+          "low_stock": { "type": "boolean" }
+        }
+      },
+
+      "suggest": {
+        "properties": {
+          "name": { "type": "completion", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" },
+          "brand": { "type": "completion", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" }
+        }
+      },
+
+      "search_text": {
+        "type": "text",
+        "analyzer": "fulltext_ru_en_index",
+        "search_analyzer": "fulltext_ru_en_search"
+      }
+    }
+  }
+}

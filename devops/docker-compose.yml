@@ -132,19 +132,39 @@ services:
         limits:
           memory: 3g
     volumes:
+      - ./configs/elastic/synonyms_ru_en.txt:/usr/share/elasticsearch/config/analysis/synonyms_ru_en.txt
+      - ./logs/elastic:/usr/share/elasticsearch/logs
       - es-data:/usr/share/elasticsearch/data
+  init-elastic:
+    image: curlimages/curl:8.16.0
+    container_name: curl-elastic-init
+    depends_on:
+      - elasticsearch
+    environment:
+      ES_SCHEME: "http"
+      ES_HOST: "elasticsearch"
+      ES_PORT: "9200"
+#     Если включена безопасность
+#     ES_USERNAME: ""
+#     ES_PASSWORD: ""
+      INDEX_NAME: "product_v1"
+      MAPPINGS_FILE: "/mappings/product_V1-mapping.json"
+      WAIT_TIMEOUT_SEC: "120"
+      VERBOSE: "false"
+    volumes:
+      - ./configs/elastic/init-index.sh:/setup/init-index.sh:ro
+      - ./configs/elastic/mappings:/mappings:ro
+    entrypoint: ["/bin/sh","-c","set -e; /bin/sh /setup/init-index.sh"]
+
   kibana:
     image: kibana:9.1.4
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://es-dev:9200
-      - i18n.locale=ru-RU
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch
-
-
 volumes:
   postgres_user_data:
   postgres_keycloak_data:

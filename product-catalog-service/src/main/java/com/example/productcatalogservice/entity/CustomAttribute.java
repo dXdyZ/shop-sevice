@@ -21,8 +21,12 @@ public class CustomAttribute implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Version
+    private Long version;
+
+    @Builder.Default
     @Column(name = "public_id", unique = true, nullable = false)
-    private UUID publicId;
+    private UUID publicId = UUID.randomUUID();
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -33,11 +37,4 @@ public class CustomAttribute implements Serializable {
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.publicId == null) {
-            this.publicId = UUID.randomUUID();
-        }
-    }
 }
