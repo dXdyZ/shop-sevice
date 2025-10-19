@@ -48,7 +48,6 @@ class KeycloakServiceIntegrationTest {
 
     private static final String REALM = "shop";
 
-
     @Container
     static final GenericContainer<?> keycloak = new GenericContainer<>("quay.io/keycloak/keycloak:26.3")
             .withExposedPorts(8080)
@@ -95,11 +94,12 @@ class KeycloakServiceIntegrationTest {
 
     @AfterEach
     void cleanup() {
-        for (String id : createdUserIds) {
+        createdUserIds.forEach(id -> {
             try {
                 keycloakAdmin.realm(REALM).users().get(id).remove();
-            } catch (Exception ignored) {}
-        }
+            } catch (Exception ignore){}
+        });
+
         createdUserIds.clear();
     }
 

@@ -1,10 +1,11 @@
-package com.example.productcatalogservice.service;
+package com.example.productcatalogservice.unit.service;
 
 import com.example.productcatalogservice.dto.create.CreateCategoryDto;
 import com.example.productcatalogservice.entity.Category;
 import com.example.productcatalogservice.exception.CategoryDuplicateException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
 import com.example.productcatalogservice.repositoty.jpa.CategoryRepository;
+import com.example.productcatalogservice.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -189,7 +190,7 @@ class CategoryServiceTest {
                         .name("Phone")
                 .build());
 
-        when(categoryRepository.findByPublicIdIn(anyList())).thenReturn(categories);
+        when(categoryRepository.findAllByPublicIdIn(anyList())).thenReturn(categories);
 
         List<Category> result = categoryService.getCategoriesByPublicIds(ids);
 
@@ -200,7 +201,7 @@ class CategoryServiceTest {
 
     @Test
     void getCategoriesByPublicIds_ShouldReturnEmptyCollection_WhenCategoriesDoesNotExists() {
-        when(categoryRepository.findByPublicIdIn(anyList())).thenReturn(List.of());
+        when(categoryRepository.findAllByPublicIdIn(anyList())).thenReturn(List.of());
 
         List<Category> result = categoryService.getCategoriesByPublicIds(List.of(UUID.randomUUID()));
 

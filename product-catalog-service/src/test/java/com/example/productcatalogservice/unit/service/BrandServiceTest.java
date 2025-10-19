@@ -1,10 +1,11 @@
-package com.example.productcatalogservice.service;
+package com.example.productcatalogservice.unit.service;
 
 import com.example.productcatalogservice.dto.create.CreateBrandDto;
 import com.example.productcatalogservice.entity.Brand;
 import com.example.productcatalogservice.exception.BrandDuplicateException;
 import com.example.productcatalogservice.exception.BrandNotFoundException;
 import com.example.productcatalogservice.repositoty.jpa.BrandRepository;
+import com.example.productcatalogservice.service.BrandService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

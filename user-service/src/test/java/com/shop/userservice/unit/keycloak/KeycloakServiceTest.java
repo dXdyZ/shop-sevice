@@ -1,4 +1,4 @@
-package com.shop.userservice.keycloak;
+package com.shop.userservice.unit.keycloak;
 
 import com.shop.userservice.exception.UserDuplicateException;
 import com.shop.userservice.exception.UserNotFoundException;

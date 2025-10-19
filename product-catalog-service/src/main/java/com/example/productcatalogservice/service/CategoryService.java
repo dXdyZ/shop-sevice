@@ -53,7 +53,11 @@ public class CategoryService {
     }
 
     public List<Category> getCategoriesByPublicIds(List<UUID> publicIds) {
-        return categoryRepository.findByPublicIdIn(publicIds);
+        return categoryRepository.findAllByPublicIdIn(publicIds);
+    }
+
+    public List<Category> getCategoriesByIds(List<Long> ids) {
+        return categoryRepository.findAllByIdIn(ids);
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.service;
+package com.example.productcatalogservice.unit.service;
 
 import com.example.productcatalogservice.dto.create.CreateFeedbackDto;
 import com.example.productcatalogservice.entity.Feedback;
@@ -7,6 +7,8 @@ import com.example.productcatalogservice.exception.FeedbackDuplicateException;
 import com.example.productcatalogservice.exception.FeedbackNotFoundException;
 import com.example.productcatalogservice.exception.ProductNotFoundException;
 import com.example.productcatalogservice.repositoty.jpa.FeedbackRepository;
+import com.example.productcatalogservice.service.FeedbackService;
+import com.example.productcatalogservice.service.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

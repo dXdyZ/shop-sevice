@@ -1,4 +1,4 @@
-package com.example.productcatalogservice.service;
+package com.example.productcatalogservice.unit.service;
 
 import com.example.productcatalogservice.dto.create.CreateCustomAttributeDto;
 import com.example.productcatalogservice.dto.create.CreateProductDto;
@@ -9,6 +9,10 @@ import com.example.productcatalogservice.exception.BrandNotFoundException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
 import com.example.productcatalogservice.exception.ProductNotFoundException;
 import com.example.productcatalogservice.repositoty.jpa.ProductRepository;
+import com.example.productcatalogservice.service.BrandService;
+import com.example.productcatalogservice.service.CategoryService;
+import com.example.productcatalogservice.service.InventoryService;
+import com.example.productcatalogservice.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -70,6 +74,7 @@ class ProductServiceTest {
                 10.0,
                 5.0,
                 3.0,
+                List.of(UUID.randomUUID()),
                 List.of(new CreateCustomAttributeDto("color", "blue")),
                 100,
                 10

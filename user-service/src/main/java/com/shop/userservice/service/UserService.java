@@ -49,7 +49,7 @@ public class UserService {
                 userRegistrationDto.getLastName(), userRegistrationDto.getEmail(), userRegistrationDto.getPassword());
 
         User user = User.builder()
-                .userUUID(UUID.fromString(userUUID))
+                .publicId(UUID.fromString(userUUID))
                 .firstName(userRegistrationDto.getFirstName())
                 .lastName(userRegistrationDto.getLastName())
                 .patronymic(userRegistrationDto.getPatronymic())

@@ -17,6 +17,7 @@ public record CreateProductDto(
         Double lengthCm,
         Double widthCm,
         Double heightCm,
+        List<UUID> attributeValuePublicIds,
         List<CreateCustomAttributeDto> customAttributes,
         Integer quantity,
         Integer lowStockThreshold

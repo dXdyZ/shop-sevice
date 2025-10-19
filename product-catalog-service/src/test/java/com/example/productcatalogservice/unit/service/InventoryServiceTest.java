@@ -1,10 +1,11 @@
-package com.example.productcatalogservice.service;
+package com.example.productcatalogservice.unit.service;
 
 import com.example.productcatalogservice.entity.Inventory;
 import com.example.productcatalogservice.entity.Product;
 import com.example.productcatalogservice.exception.InventoryDuplicateException;
 import com.example.productcatalogservice.exception.InventoryNotFoundException;
 import com.example.productcatalogservice.repositoty.jpa.InventoryRepository;
+import com.example.productcatalogservice.service.InventoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

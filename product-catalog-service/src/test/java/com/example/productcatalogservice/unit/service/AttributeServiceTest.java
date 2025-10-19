@@ -1,6 +1,6 @@
-package com.example.productcatalogservice.service;
+package com.example.productcatalogservice.unit.service;
 
-import com.example.productcatalogservice.dto.AddAttributeValueDto;
+import com.example.productcatalogservice.dto.create.CreateAttributeValueDto;
 import com.example.productcatalogservice.dto.create.CreateAttributeDto;
 import com.example.productcatalogservice.entity.Attribute;
 import com.example.productcatalogservice.entity.AttributeValue;
@@ -8,6 +8,7 @@ import com.example.productcatalogservice.exception.AttributeDuplicateException;
 import com.example.productcatalogservice.exception.AttributeNotFoundException;
 import com.example.productcatalogservice.exception.AttributeValueDuplicateException;
 import com.example.productcatalogservice.repositoty.jpa.AttributeRepository;
+import com.example.productcatalogservice.service.AttributeService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -88,7 +89,7 @@ class AttributeServiceTest {
                 .publicId(publicId)
                 .build();
 
-        var createDto = new AddAttributeValueDto(value, publicId);
+        var createDto = new CreateAttributeValueDto(value, publicId);
 
         when(attributeRepository.findByPublicId(publicId)).thenReturn(Optional.of(attribute));
         when(attributeRepository.save(any(Attribute.class))).thenReturn(attribute);
@@ -115,7 +116,7 @@ class AttributeServiceTest {
                         .slug(value)
                 .build());
 
-        var createDto = new AddAttributeValueDto(value, publicId);
+        var createDto = new CreateAttributeValueDto(value, publicId);
 
         when(attributeRepository.findByPublicId(publicId)).thenReturn(Optional.of(attribute));
 

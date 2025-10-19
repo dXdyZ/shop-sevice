@@ -1,5 +1,6 @@
-package com.example.productcatalogservice.util;
+package com.example.productcatalogservice.unit.util;
 
+import com.example.productcatalogservice.util.RatingCalculation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

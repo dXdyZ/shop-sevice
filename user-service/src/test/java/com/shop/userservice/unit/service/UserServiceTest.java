@@ -1,4 +1,4 @@
-package com.shop.userservice.service;
+package com.shop.userservice.unit.service;
 
 import com.shop.userservice.dto.UserRegistrationDto;
 import com.shop.userservice.dto.UserSearchDto;

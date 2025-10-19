@@ -1,6 +1,7 @@
 package com.example.productcatalogservice.service;
 
 import com.example.productcatalogservice.dto.create.CreateProductDto;
+import com.example.productcatalogservice.dto.event.ProductCreateEvent;
 import com.example.productcatalogservice.entity.*;
 import com.example.productcatalogservice.exception.BrandNotFoundException;
 import com.example.productcatalogservice.exception.CategoryNotFoundException;
@@ -8,6 +9,8 @@ import com.example.productcatalogservice.exception.ProductNotFoundException;
 import com.example.productcatalogservice.repositoty.jpa.ProductRepository;
 import com.example.productcatalogservice.util.SkuGenerator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,12 +25,17 @@ public class ProductService {
     private final BrandService brandService;
     private final CategoryService categoryService;
     private final InventoryService inventoryService;
+    private final AttributeService attributeService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public Product createProduct(CreateProductDto createDto) throws BrandNotFoundException, CategoryNotFoundException {
         Brand brand = brandService.getBrandByPublicId(createDto.brandPublicId());
         Category primaryCategory = categoryService.getCategoryByPublicId(createDto.primaryCategoryPublicId());
         List<Category> categories = categoryService.getCategoriesByPublicIds(createDto.categoryPublicIds());
+
+        List<AttributeValue> attributeValues = attributeService
+                .getAttributeValuesByPublicIds(createDto.attributeValuePublicIds());
 
         List<CustomAttribute> customAttributes = createDto.customAttributes().stream()
                 .map(custom -> {
@@ -52,12 +60,18 @@ public class ProductService {
                 .currency(createDto.currency())
                 .build();
 
+
         categories.forEach(product::addCategory);
         customAttributes.forEach(product::addCustomAttributes);
+        attributeValues.forEach(product::addAttributeValue);
 
-        inventoryService.createInventory(product, createDto.quantity(), createDto.lowStockThreshold());
+        long invId = inventoryService.createInventory(product, createDto.quantity(), createDto.lowStockThreshold()).getId();
 
-        return productRepository.save(product);
+        Product saveProduct = productRepository.save(product);
+
+        eventPublisher.publishEvent(new ProductCreateEvent(saveProduct.getId(), invId));
+
+        return saveProduct;
     }
 
     public Product getProductById(Long id) {

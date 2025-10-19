@@ -1,4 +1,4 @@
-package com.shop.userservice.controller;
+package com.shop.userservice.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.userservice.dto.UserRegistrationDto;
