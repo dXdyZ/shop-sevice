@@ -61,6 +61,7 @@
   "mappings": {
     "dynamic": "strict",
     "properties": {
+      "_class": {"type": "keyword", "index": "false"},
       "id": { "type": "long" },
       "public_id": { "type": "keyword" },
       "sku": { "type": "keyword" },
@@ -90,6 +91,7 @@
 
       "brand": {
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "id": { "type": "long" },
           "public_id": { "type": "keyword" },
           "name": {
@@ -109,6 +111,7 @@
 
       "primary_category": {
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "id": { "type": "long" },
           "public_id": { "type": "keyword" },
           "name": {
@@ -121,6 +124,7 @@
               "edge": { "type": "text", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" }
             }
           },
+          "slug": {"type": "keyword", "normalizer": "lowercase_normalizer"},
           "path_ids": { "type": "long" },
           "path_slugs": { "type": "keyword" }
         }
@@ -129,6 +133,7 @@
       "categories": {
         "type": "nested",
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "id": { "type": "long" },
           "public_id": { "type": "keyword" },
           "name": {
@@ -148,6 +153,7 @@
       "attributes": {
         "type": "nested",
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "attribute_id": { "type": "long" },
           "attribute_public_id": { "type": "keyword" },
           "attribute_name": {
@@ -179,6 +185,7 @@
       "custom_attributes": {
         "type": "nested",
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "name": { "type": "keyword", "normalizer": "lowercase_normalizer" },
           "value": { "type": "keyword" }
         }
@@ -195,6 +202,7 @@
 
       "inventory": {
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "quantity": { "type": "integer" },
           "in_stock": { "type": "boolean" },
           "low_stock": { "type": "boolean" }
@@ -203,6 +211,7 @@
 
       "suggest": {
         "properties": {
+          "_class": {"type": "keyword", "index": "false"},
           "name": { "type": "completion", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" },
           "brand": { "type": "completion", "analyzer": "edge_name", "search_analyzer": "fulltext_ru_en_search" }
         }

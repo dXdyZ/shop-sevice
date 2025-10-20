@@ -61,13 +61,13 @@ public class ProductDoc {
     @Field(type = FieldType.Keyword)
     private String currency;
 
-    @Field(name = "rating_count", type = FieldType.Integer)
+    @Field(name = "rating_count", type = FieldType.Long)
     private Long ratingCount;
 
     @Field(name = "is_active", type = FieldType.Boolean)
     private Boolean isActive;
 
-    @Field(name = "is_available", type = FieldType.Binary)
+    @Field(name = "is_available", type = FieldType.Boolean)
     private Boolean isAvailable;
 
     @Field(type = FieldType.Object)

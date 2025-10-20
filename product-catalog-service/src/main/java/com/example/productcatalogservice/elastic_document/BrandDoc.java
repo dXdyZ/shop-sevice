@@ -22,6 +22,6 @@ BrandDoc {
     @Field(type = FieldType.Keyword)
     private String slug;
 
-    @Field(type = FieldType.Boolean)
+    @Field(name = "is_active", type = FieldType.Boolean)
     private Boolean isActive;
 }

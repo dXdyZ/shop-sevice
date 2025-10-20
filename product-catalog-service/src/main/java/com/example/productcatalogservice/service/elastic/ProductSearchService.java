@@ -2,6 +2,7 @@ package com.example.productcatalogservice.service.elastic;
 
 import com.example.productcatalogservice.dto.event.ProductCreateEvent;
 import com.example.productcatalogservice.elastic_document.ProductDoc;
+import com.example.productcatalogservice.exception.elastic.ProductDocumentNotFoundException;
 import com.example.productcatalogservice.repositoty.elastic.ProductSearchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,19 @@ public class ProductSearchService {
     private final ProductDataProvider productDataProvider;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void createProductSearchDocument(ProductCreateEvent event) {
+    public ProductDoc createProductSearchDocument(ProductCreateEvent event) {
         ProductDoc productDoc = productDataProvider.getProductData(event.productId(), event.inventoryId());
 
-        productSearchRepository.save(productDoc);
+        return productSearchRepository.save(productDoc);
+    }
+
+    public ProductDoc getProductDocById(Long id) {
+        return productSearchRepository.findById(id).orElseThrow(
+                () -> new ProductDocumentNotFoundException("Product document by id: %s not found".formatted(id)));
+    }
+
+    public ProductDoc getProductDocByPublicId(String publicId) {
+        return productSearchRepository.findByPublicId(publicId).orElseThrow(
+                () -> new ProductDocumentNotFoundException("Product document by public id: %s not found".formatted(publicId)));
     }
 }

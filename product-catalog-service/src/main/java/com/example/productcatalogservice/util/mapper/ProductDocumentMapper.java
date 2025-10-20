@@ -98,6 +98,7 @@ public class ProductDocumentMapper {
         return PrimaryCategoryDoc.builder()
                 .id(c.getId())
                 .publicId(c.getPublicId().toString())
+                .slug(c.getSlug())
                 .name(c.getName())
                 .pathIds(pathIds)
                 .pathSlug(pathSlugs)

@@ -23,9 +23,12 @@ public class PrimaryCategoryDoc {
     @Field(type = FieldType.Text)
     private String name;
 
+    @Field(type = FieldType.Keyword)
+    private String slug;
+
     @Field(name = "path_ids", type = FieldType.Long)
     private List<Long> pathIds;
 
-    @Field(name = "path_slug", type = FieldType.Keyword)
+    @Field(name = "path_slugs", type = FieldType.Keyword)
     private List<String> pathSlug;
 }

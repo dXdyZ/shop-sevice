@@ -22,8 +22,9 @@ public class ProductAttributeValue implements Serializable {
     @Version
     private Long version;
 
+    @Builder.Default
     @Column(name = "public_id", nullable = false, unique = true, updatable = false)
-    private UUID publicId;
+    private UUID publicId = UUID.randomUUID();
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
